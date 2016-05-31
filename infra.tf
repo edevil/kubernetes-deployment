@@ -236,8 +236,8 @@ resource "azurerm_availability_set" "masterAS" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
 }
 
-resource "azurerm_network_security_group" "https-sg" {
-    name = "allowHTTPSSecurityGroup"
+resource "azurerm_network_security_group" "master-sg" {
+    name = "allowMasterSecurityGroup"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
 
@@ -266,7 +266,7 @@ resource "azurerm_network_interface" "master1NIC" {
     name = "master1nic"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    network_security_group_id = "${azurerm_network_security_group.https-sg.id}"
+    network_security_group_id = "${azurerm_network_security_group.master-sg.id}"
 
     ip_configuration {
         name = "master1ipconfiguration"
