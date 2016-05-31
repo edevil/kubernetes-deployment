@@ -1,0 +1,1 @@
+ansible_python_interpreter: "PATH=/home/brpxuser/bin:$PATH python"

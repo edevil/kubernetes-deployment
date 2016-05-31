@@ -1,0 +1,1 @@
+ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o ProxyCommand="ssh -o StrictHostKeyChecking=no -W %h:%p -q brpxuser@kubenewjbox.westeurope.cloudapp.azure.com"'

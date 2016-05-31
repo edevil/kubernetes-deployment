@@ -1,3 +1,5 @@
 terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
+certs/*key*
+.DS_Store

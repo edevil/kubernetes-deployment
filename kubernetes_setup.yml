@@ -1,0 +1,105 @@
+- name: Initialize etcd nodes
+  hosts: etcd
+  become: yes
+  tags: ectd
+  tasks:
+    - name: Create etcd config dir
+      file: path=/etc/systemd/system/etcd2.service.d state=directory
+    - name: Configure etcd
+      template: src=etcd-listen-address.conf dest=/etc/systemd/system/etcd2.service.d/40-listen-address.conf
+    - name: Reload systemd daemons
+      shell: systemctl daemon-reload
+    - name: Start etcd2
+      service: name=etcd2 state=started enabled=yes
+
+- name: Initialize Kubernetes master
+  hosts: master
+  become: yes
+  tags: master
+  tasks:
+    - name: Create certificates directory
+      file: path=/etc/kubernetes/ssl state=directory
+    - name: Copy CA SSL certificate
+      copy: src=certs/ca.pem dest=/etc/kubernetes/ssl/ca.pem mode=0644
+    - name: Copy API certificate
+      copy: src=certs/apiserver.pem dest=/etc/kubernetes/ssl/apiserver.pem mode=0644
+    - name: Copy API private key
+      copy: src=certs/apiserver-key.pem dest=/etc/kubernetes/ssl/apiserver-key.pem mode=0600
+    - name: Create Flannel dir
+      file: path=/etc/flannel state=directory
+    - name: Write Flannel config
+      template: src=flannel_options.env dest=/etc/flannel/options.env
+    - name: Create systemd dropin dir for Flannel
+      file: path=/etc/systemd/system/flanneld.service.d state=directory
+    - name: Write systemd dropin for Flannel
+      copy: src=flannel-dropin.conf dest=/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf mode=0644
+    - name: Create Docker systemd dropin dir
+      file: path=/etc/systemd/system/docker.service.d state=directory
+    - name: Write Docker systemd dropin
+      copy: src=40-flannel.conf dest=/etc/systemd/system/docker.service.d/40-flannel.conf mode=0644
+    - name: Create Kubelet unit
+      template: src=kubelet-master.service dest=/etc/systemd/system/kubelet.service
+    - name: Create manifest dir
+      file: path=/etc/kubernetes/manifests state=directory
+    - name: Configure API server
+      template: src=apiserver.yaml dest=/etc/kubernetes/manifests/kube-apiserver.yaml
+    - name: Copy sample tokens
+      copy: src=tokens.csv dest=/etc/kubernetes/tokens.csv
+    - name: Configure Controller Manager
+      template: src=controller-manager.yaml dest=/etc/kubernetes/manifests/kube-controller-manager.yaml
+    - name: Configure Scheduler
+      template: src=scheduler.yaml dest=/etc/kubernetes/manifests/kube-scheduler.yaml
+    - name: Reload systemd daemons
+      shell: systemctl daemon-reload
+    - name: Configure pod network
+      shell: curl -X PUT -d "value={\"Network\":\"{{ pod_network }}\",\"Backend\":{\"Type\":\"vxlan\"}}" "http://{{ hostvars[groups['etcd'][0]]['ansible_eth0']['ipv4']['address'] }}:2379/v2/keys/coreos.com/network/config"
+      args:
+        warn: False
+    - name: Start Kubelet
+      service: name=kubelet state=started enabled=yes
+    - name: Wait for API to spin up
+      wait_for: port=8080 delay=10
+    - name: Create Kube-System namespace
+      shell: 'curl -H "Content-Type: application/json" -XPOST -d"{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"kube-system\"}}" "http://127.0.0.1:8080/api/v1/namespaces"'
+      args:
+        warn: False
+
+- name: Initialize Kubernetes nodes
+  hosts: node
+  become: yes
+  tags: node
+  tasks:
+    - name: Create certificates directory
+      file: path=/etc/kubernetes/ssl state=directory
+    - name: Copy CA SSL certificate
+      copy: src=certs/ca.pem dest=/etc/kubernetes/ssl/ca.pem mode=0644
+    - name: Copy node certificate
+      copy: src=certs/{{ ansible_fqdn }}-worker.pem dest=/etc/kubernetes/ssl/worker.pem mode=0644
+    - name: Copy node private key
+      copy: src=certs/{{ ansible_fqdn }}-worker-key.pem dest=/etc/kubernetes/ssl/worker-key.pem mode=0600
+    - name: Create Flannel dir
+      file: path=/etc/flannel state=directory
+    - name: Write Flannel config
+      template: src=flannel_options.env dest=/etc/flannel/options.env
+    - name: Create systemd dropin dir for Flannel
+      file: path=/etc/systemd/system/flanneld.service.d state=directory
+    - name: Write systemd dropin for Flannel
+      copy: src=flannel-dropin.conf dest=/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf mode=0644
+    - name: Create Docker systemd dropin dir
+      file: path=/etc/systemd/system/docker.service.d state=directory
+    - name: Write Docker systemd dropin
+      copy: src=40-flannel.conf dest=/etc/systemd/system/docker.service.d/40-flannel.conf mode=0644
+    - name: Create Kubelet unit
+      template: src=kubelet.service dest=/etc/systemd/system/kubelet.service
+    - name: Create manifest dir
+      file: path=/etc/kubernetes/manifests state=directory
+    - name: Configure Kube-proxy
+      template: src=kube-proxy.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
+    - name: Setup kubeconfig
+      copy: src=worker-kubeconfig.yaml dest=/etc/kubernetes/worker-kubeconfig.yaml
+    - name: Reload systemd daemons
+      shell: systemctl daemon-reload
+    - name: Start Flannel
+      service: name=flanneld state=started enabled=yes
+    - name: Start Kubelet
+      service: name=kubelet state=started enabled=yes
