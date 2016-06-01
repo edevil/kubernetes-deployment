@@ -3,20 +3,10 @@ variable "region" {
     default = "West Europe"
 }
 
-variable "resource_group_name" {
-    default = "KubernetesNEW"
-}
+variable "resource_group" {}
 
 variable "virtual_network_name" {
     default = "KubeVNET"
-}
-
-variable "storage_account_name" {
-    default = "brpxkubedatadisksnew"
-}
-
-variable "jumpbox_dns_name" {
-    default = "kubenewjbox"
 }
 
 variable "username" {
@@ -25,10 +15,6 @@ variable "username" {
 
 variable "ssh_key_location" {
     default = "/Users/andre/.ssh/id_rsa.pub"
-}
-
-variable "master_dns_name" {
-    default = "kubenewbrpx"
 }
 
 variable "num_nodes" {
@@ -66,7 +52,7 @@ provider "azurerm" {
 
 # Create a resource group
 resource "azurerm_resource_group" "kuberg" {
-    name = "${var.resource_group_name}"
+    name = "${var.resource_group}"
     location = "${var.region}"
 }
 
@@ -107,7 +93,7 @@ resource "azurerm_subnet" "management" {
 }
 
 resource "azurerm_storage_account" "disks_account" {
-  name = "${var.storage_account_name}"
+  name = "${lower(var.resource_group)}disks"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   location = "${var.region}"
   account_type = "Standard_LRS"
@@ -125,7 +111,7 @@ resource "azurerm_public_ip" "jboxPUBIP" {
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     public_ip_address_allocation = "dynamic"
-    domain_name_label = "${var.jumpbox_dns_name}"
+    domain_name_label = "${var.resource_group}-jbox"
 }
 
 resource "azurerm_network_interface" "jboxNIC" {
@@ -271,7 +257,7 @@ resource "azurerm_public_ip" "masterPUBIP" {
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     public_ip_address_allocation = "dynamic"
-    domain_name_label = "${var.master_dns_name}"
+    domain_name_label = "${var.resource_group}-master"
 }
 
 resource "azurerm_network_interface" "master1NIC" {
