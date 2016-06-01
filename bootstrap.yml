@@ -1,4 +1,4 @@
-- hosts: coreos
+- hosts: coreos:&{{ resource_group }}
   gather_facts: False
   roles:
     - defunctzombie.coreos-bootstrap

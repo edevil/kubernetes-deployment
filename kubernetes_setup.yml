@@ -1,5 +1,5 @@
 - name: Initialize etcd nodes
-  hosts: etcd
+  hosts: etcd:&{{ resource_group }}
   become: yes
   tags: ectd
   tasks:
@@ -13,7 +13,7 @@
       service: name=etcd2 state=started enabled=yes
 
 - name: Initialize Kubernetes master
-  hosts: master
+  hosts: master:&{{ resource_group }}
   become: yes
   tags: master
   tasks:
@@ -65,7 +65,7 @@
         warn: False
 
 - name: Initialize Kubernetes nodes
-  hosts: node
+  hosts: node:&{{ resource_group }}
   become: yes
   tags: node
   tasks:

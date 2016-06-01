@@ -40,7 +40,7 @@
         creates: apiserver.pem
 
 - name: Generate workers Certs
-  hosts: node
+  hosts: node:&{{ resource_group }}
   connection: local
   tags: workerscerts
   vars:
