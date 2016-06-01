@@ -1,6 +1,6 @@
 # Variables
 variable "region" {
-    default = "West Europe"
+    default = "westeurope"
 }
 
 variable "resource_group" {}
