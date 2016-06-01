@@ -39,6 +39,18 @@ variable "num_etcds" {
     default = 3
 }
 
+variable "etcd_vm_size" {
+    default = "Standard_A1"
+}
+
+variable "master_vm_size" {
+    default = "Standard_A1"
+}
+
+variable "node_vm_size" {
+    default = "Standard_A1"
+}
+
 variable "subscription_id" {}
 variable "client_id" {}
 variable "client_secret" {}
@@ -191,7 +203,7 @@ resource "azurerm_virtual_machine" "etcdvm" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_interface_ids = ["${element(azurerm_network_interface.etcdNIC.*.id, count.index)}"]
     availability_set_id = "${azurerm_availability_set.etcdAS.id}"
-    vm_size = "Standard_A1"
+    vm_size = "${var.etcd_vm_size}"
 
     storage_image_reference {
         publisher = "CoreOS"
@@ -283,7 +295,7 @@ resource "azurerm_virtual_machine" "mastervm" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_interface_ids = ["${azurerm_network_interface.master1NIC.id}"]
     availability_set_id = "${azurerm_availability_set.masterAS.id}"
-    vm_size = "Standard_A1"
+    vm_size = "${var.master_vm_size}"
 
     storage_image_reference {
         publisher = "CoreOS"
@@ -346,7 +358,7 @@ resource "azurerm_virtual_machine" "nodevm" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_interface_ids = ["${element(azurerm_network_interface.nodeNIC.*.id, count.index)}"]
     availability_set_id = "${azurerm_availability_set.nodeAS.id}"
-    vm_size = "Standard_A1"
+    vm_size = "${var.node_vm_size}"
 
     storage_image_reference {
         publisher = "CoreOS"
