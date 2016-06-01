@@ -1,0 +1,66 @@
+- name: Generate CA Cert
+  hosts: localhost
+  connection: local
+  tags: cacert
+  tasks:
+    - name: Create certs dir
+      file: path=certs state=directory
+    - name: Generate CA primary key
+      shell: openssl genrsa -out ca-key.pem 2048
+      args:
+        chdir: certs/
+        creates: ca-key.pem
+    - name: Generate CA certificate
+      shell: openssl req -x509 -new -nodes -key ca-key.pem -days 10000 -out ca.pem -subj "/CN=kube-ca"
+      args:
+        chdir: certs/
+        creates: ca.pem
+
+- name: Generate apiserver Cert
+  hosts: localhost
+  connection: local
+  tags: apiservercert
+  tasks:
+    - name: Generate apiserver template
+      template: src=openssl.cnf dest=certs/openssl.cnf
+    - name: Generate apiserver primary key
+      shell: openssl genrsa -out apiserver-key.pem 2048
+      args:
+        chdir: certs/
+        creates: apiserver-key.pem
+    - name: Generate apiserver CSR
+      shell: openssl req -new -key apiserver-key.pem -out apiserver.csr -subj "/CN=kube-apiserver" -config openssl.cnf
+      args:
+        chdir: certs/
+        creates: apiserver.csr
+    - name: Generate apiserver certificate
+      shell: openssl x509 -req -in apiserver.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out apiserver.pem -days 720 -extensions v3_req -extfile openssl.cnf
+      args:
+        chdir: certs/
+        creates: apiserver.pem
+
+- name: Generate workers Certs
+  hosts: node
+  connection: local
+  tags: workerscerts
+  vars:
+    ansible_python_interpreter: "python"
+  tasks:
+    - name: Generate worker template
+      template: src=worker-openssl.cnf dest=certs/{{ name }}-worker-openssl.cnf
+    - name: Generate worker primary key
+      shell: openssl genrsa -out {{ name }}-worker-key.pem 2048
+      args:
+        chdir: certs/
+        creates: "{{ name }}-worker-key.pem"
+    - name: Generate worker CSR
+      shell: openssl req -new -key {{ name }}-worker-key.pem -out {{ name }}-worker.csr -subj "/CN={{ name }}" -config {{ name }}-worker-openssl.cnf
+      args:
+        chdir: certs/
+        creates: "{{ name }}-worker.csr"
+    - name: Generate worker certificate
+      shell: openssl x509 -req -in {{ name }}-worker.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out {{ name }}-worker.pem -days 720 -extensions v3_req -extfile {{ name }}-worker-openssl.cnf
+      args:
+        chdir: certs/
+        creates: "{{ name }}-worker.pem"
+
