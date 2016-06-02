@@ -23,7 +23,7 @@ You need an Azure service principal in order for Ansible (through Azure's Python
  * client_secret
  * tenant_id
 
-For [configuring](https://docs.ansible.com/ansible/guide_azure.html) Ansible you can use environment variables or store them in the file `$HOME/.azure/credentials` in an ini style format. For [configuring](https://www.terraform.io/docs/configuration/variables.html) Terraform you can set these parameters in tf var files.
+For [configuring Ansible](https://docs.ansible.com/ansible/guide_azure.html) you can use environment variables or store them in the file `$HOME/.azure/credentials` in an ini style format. For [configuring Terraform](https://www.terraform.io/docs/configuration/variables.html) you can set these parameters in tf var files.
 
 Afterwards, `kubectl` uses tokens to authenticate against the Kubernetes API. The tokens can be found in the `files/tokens.csv` file.
 
@@ -61,7 +61,7 @@ The communications between the nodes and the master is authenticated via PKI. Th
 
 This step installs all Kubernetes components and certificates.
 
-    ansible-playbook -i inv -e resource_group=$RESOURCE_GROUP kubernetes_setup.yml
+    ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP kubernetes_setup.yml
 
 ## Configure the local kubectl
 
