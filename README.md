@@ -39,7 +39,7 @@ The resource group name is used to build some other parameters such as the jumpb
 
 Terraform is used for provisioning the Azure infrastructure. You may also want to alter the `ssh_key_location` variable which points to the SSH key that will be associated with the `brpxuser` user in the VMs.
 
-    terraform apply -var 'resource_group=$RESOURCE_GROUP'
+    terraform apply -var "resource_group=$RESOURCE_GROUP"
 
 ## Configure VMs
 
