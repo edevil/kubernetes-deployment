@@ -112,8 +112,8 @@ Only one backend pool is needed.
 
 All node's NICs need to be added to the backend pool.
 
-    azure network nic address-pool create $RESOURCE_GROUP node-0-nic -l KubeNodeLB -a NodeBackPool
-    azure network nic address-pool create $RESOURCE_GROUP node-1-nic -l KubeNodeLB -a NodeBackPool
+    azure network nic ip-config address-pool create $RESOURCE_GROUP node-0-nic -l KubeNodeLB -a NodeBackPool
+    azure network nic ip-config address-pool create $RESOURCE_GROUP node-1-nic -l KubeNodeLB -a NodeBackPool
 
 ### Configure health probe
 
