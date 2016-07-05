@@ -37,6 +37,10 @@ variable "node_vm_size" {
     default = "Standard_A1"
 }
 
+variable "pod_cidr" {
+    default = "10.2.0.0/16"
+}
+
 variable "subscription_id" {}
 variable "client_id" {}
 variable "client_secret" {}
@@ -64,11 +68,18 @@ resource "azurerm_virtual_network" "network" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
 }
 
+resource "azurerm_route_table" "kubetable" {
+  name = "kube-route-table"
+  location = "${var.region}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+}
+
 resource "azurerm_subnet" "etcd" {
     name = "etcd"
     address_prefix = "10.0.1.0/24"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     virtual_network_name = "${azurerm_virtual_network.network.name}"
+    route_table_id = "${azurerm_route_table.kubetable.id}"
 }
 
 resource "azurerm_subnet" "master" {
@@ -76,6 +87,7 @@ resource "azurerm_subnet" "master" {
     address_prefix = "10.0.2.0/24"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     virtual_network_name = "${azurerm_virtual_network.network.name}"
+    route_table_id = "${azurerm_route_table.kubetable.id}"
 }
 
 resource "azurerm_subnet" "node" {
@@ -83,6 +95,7 @@ resource "azurerm_subnet" "node" {
     address_prefix = "10.0.3.0/24"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     virtual_network_name = "${azurerm_virtual_network.network.name}"
+    route_table_id = "${azurerm_route_table.kubetable.id}"
 }
 
 resource "azurerm_subnet" "management" {
@@ -90,6 +103,7 @@ resource "azurerm_subnet" "management" {
     address_prefix = "10.0.254.0/24"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     virtual_network_name = "${azurerm_virtual_network.network.name}"
+    route_table_id = "${azurerm_route_table.kubetable.id}"
 }
 
 resource "azurerm_storage_account" "disks_account" {
@@ -224,7 +238,7 @@ resource "azurerm_virtual_machine" "etcdvm" {
         coreos = ""
         jbox = ""
     }
-  
+
     count = "${var.num_etcds}"
 }
 
@@ -265,6 +279,7 @@ resource "azurerm_network_interface" "master1NIC" {
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_security_group_id = "${azurerm_network_security_group.master-sg.id}"
+    enable_ip_forwarding = true
 
     ip_configuration {
         name = "master1ipconfiguration"
@@ -275,7 +290,25 @@ resource "azurerm_network_interface" "master1NIC" {
     }
 }
 
-resource "azurerm_virtual_machine" "mastervm" {
+resource "azurerm_subnet" "master1_bridge" {
+    name = "master1_bridge"
+    address_prefix = "${cidrsubnet(var.pod_cidr, 8, 254)}"
+    resource_group_name = "${azurerm_resource_group.kuberg.name}"
+    virtual_network_name = "${azurerm_virtual_network.network.name}"
+    route_table_id = "${azurerm_route_table.kubetable.id}"
+}
+
+resource "azurerm_route" "master1_route" {
+  name = "route-master1"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  route_table_name = "${azurerm_route_table.kubetable.name}"
+
+  address_prefix = "${azurerm_subnet.master1_bridge.address_prefix}"
+  next_hop_type = "VirtualAppliance"
+  next_hop_in_ip_address = "${azurerm_network_interface.master1NIC.private_ip_address}"
+}
+
+resource "azurerm_virtual_machine" "master1vm" {
     name = "master-1-vm"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
@@ -328,6 +361,7 @@ resource "azurerm_network_interface" "nodeNIC" {
     name = "node-${count.index}-nic"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
+    enable_ip_forwarding = true
 
     ip_configuration {
         name = "node-${count.index}"
@@ -335,6 +369,26 @@ resource "azurerm_network_interface" "nodeNIC" {
         private_ip_address_allocation = "static"
         private_ip_address = "${cidrhost(azurerm_subnet.node.address_prefix, count.index + 10)}"
     }
+  count = "${var.num_nodes}"
+}
+
+resource "azurerm_subnet" "node_bridge" {
+    name = "node-${count.index}-bridge"
+    address_prefix = "${cidrsubnet(var.pod_cidr, 8, count.index + 10)}"
+    resource_group_name = "${azurerm_resource_group.kuberg.name}"
+    virtual_network_name = "${azurerm_virtual_network.network.name}"
+    route_table_id = "${azurerm_route_table.kubetable.id}"
+    count = "${var.num_nodes}"
+}
+
+resource "azurerm_route" "node_route" {
+  name = "route-node-${count.index}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  route_table_name = "${azurerm_route_table.kubetable.name}"
+
+  address_prefix = "${element(azurerm_subnet.node_bridge.*.address_prefix, count.index)}"
+  next_hop_type = "VirtualAppliance"
+  next_hop_in_ip_address = "${element(azurerm_network_interface.nodeNIC.*.private_ip_address, count.index)}"
   count = "${var.num_nodes}"
 }
 
@@ -379,6 +433,6 @@ resource "azurerm_virtual_machine" "nodevm" {
         coreos = ""
         jbox = ""
     }
-  
+
     count = "${var.num_nodes}"
 }

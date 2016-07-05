@@ -25,18 +25,12 @@
       copy: src=certs/apiserver.pem dest=/etc/kubernetes/ssl/apiserver.pem mode=0644
     - name: Copy API private key
       copy: src=certs/apiserver-key.pem dest=/etc/kubernetes/ssl/apiserver-key.pem mode=0600
-    - name: Create Flannel dir
-      file: path=/etc/flannel state=directory
-    - name: Write Flannel config
-      template: src=flannel_options.env dest=/etc/flannel/options.env
-    - name: Create systemd dropin dir for Flannel
-      file: path=/etc/systemd/system/flanneld.service.d state=directory
-    - name: Write systemd dropin for Flannel
-      copy: src=flannel-dropin.conf dest=/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf mode=0644
+    - name: Copy Kubelet Wrapper
+      copy: src=kubelet-wrapper dest=/root/kubelet-wrapper mode=0755
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
-      copy: src=40-flannel.conf dest=/etc/systemd/system/docker.service.d/40-flannel.conf mode=0644
+      copy: src=50-docker-opts.conf dest=/etc/systemd/system/docker.service.d/50-docker-opts.conf mode=0644
     - name: Create Kubelet unit
       template: src=kubelet-master.service dest=/etc/systemd/system/kubelet.service
     - name: Create manifest dir
@@ -77,18 +71,12 @@
       copy: src=certs/{{ ansible_fqdn }}-worker.pem dest=/etc/kubernetes/ssl/worker.pem mode=0644
     - name: Copy node private key
       copy: src=certs/{{ ansible_fqdn }}-worker-key.pem dest=/etc/kubernetes/ssl/worker-key.pem mode=0600
-    - name: Create Flannel dir
-      file: path=/etc/flannel state=directory
-    - name: Write Flannel config
-      template: src=flannel_options.env dest=/etc/flannel/options.env
-    - name: Create systemd dropin dir for Flannel
-      file: path=/etc/systemd/system/flanneld.service.d state=directory
-    - name: Write systemd dropin for Flannel
-      copy: src=flannel-dropin.conf dest=/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf mode=0644
+    - name: Copy Kubelet Wrapper
+      copy: src=kubelet-wrapper dest=/root/kubelet-wrapper mode=0755
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
-      copy: src=40-flannel.conf dest=/etc/systemd/system/docker.service.d/40-flannel.conf mode=0644
+      copy: src=50-docker-opts.conf dest=/etc/systemd/system/docker.service.d/50-docker-opts.conf mode=0644
     - name: Create Kubelet unit
       template: src=kubelet.service dest=/etc/systemd/system/kubelet.service
     - name: Create manifest dir
@@ -99,7 +87,5 @@
       copy: src=worker-kubeconfig.yaml dest=/etc/kubernetes/worker-kubeconfig.yaml
     - name: Reload systemd daemons
       shell: systemctl daemon-reload
-    - name: Start Flannel
-      service: name=flanneld state=started enabled=yes
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes

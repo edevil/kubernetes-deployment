@@ -2,7 +2,10 @@
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
 Environment=KUBELET_VERSION={{ k8s_ver }}
-ExecStart=/usr/lib/coreos/kubelet-wrapper \
+ExecStart=/root/kubelet-wrapper \
+  --configure-cbr0=true \
+  --pod-cidr={{ pod_network | ipsubnet(24, 254) }} \
+  --reconcile-cidr=false \
   --api-servers=http://127.0.0.1:8080 \
   --network-plugin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \

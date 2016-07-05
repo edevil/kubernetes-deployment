@@ -2,7 +2,10 @@
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
 Environment=KUBELET_VERSION={{ k8s_ver }}
-ExecStart=/usr/lib/coreos/kubelet-wrapper \
+ExecStart=/root/kubelet-wrapper \
+  --configure-cbr0=true \
+  --pod-cidr={{ pod_network | ipsubnet(24, ansible_default_ipv4.address.split(".")[-1]) }} \
+  --reconcile-cidr=false \
   --api-servers=https://{{ master_fqdn }} \
   --network-plugin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \
