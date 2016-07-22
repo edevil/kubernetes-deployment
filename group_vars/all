@@ -1,5 +1,5 @@
 ansible_ssh_user: brpxuser
-k8s_ver: v1.2.4_coreos.1
+k8s_ver: v1.3.2_coreos.0
 network_plugin: ""
 region: westeurope
 master_fqdn: "{{ resource_group}}-master.{{ region }}.cloudapp.azure.com"
