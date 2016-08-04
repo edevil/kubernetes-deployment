@@ -39,6 +39,8 @@
       template: src=apiserver.yaml dest=/etc/kubernetes/manifests/kube-apiserver.yaml
     - name: Copy sample tokens
       copy: src=tokens.csv dest=/etc/kubernetes/tokens.csv
+    - name: Configure Kube-proxy
+      template: src=kube-proxy-master.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
     - name: Configure Controller Manager
       template: src=controller-manager.yaml dest=/etc/kubernetes/manifests/kube-controller-manager.yaml
     - name: Configure Scheduler
