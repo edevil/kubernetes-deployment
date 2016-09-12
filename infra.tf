@@ -147,6 +147,8 @@ resource "azurerm_virtual_machine" "jumpbox" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_interface_ids = ["${azurerm_network_interface.jboxNIC.id}"]
     vm_size = "Standard_A0"
+    delete_data_disks_on_termination = "true"
+    delete_os_disk_on_termination = "true"
 
     storage_image_reference {
         publisher = "Canonical"
@@ -204,6 +206,8 @@ resource "azurerm_virtual_machine" "etcdvm" {
     network_interface_ids = ["${element(azurerm_network_interface.etcdNIC.*.id, count.index)}"]
     availability_set_id = "${azurerm_availability_set.etcdAS.id}"
     vm_size = "${var.etcd_vm_size}"
+    delete_data_disks_on_termination = "true"
+    delete_os_disk_on_termination = "true"
 
     storage_image_reference {
         publisher = "CoreOS"
@@ -315,6 +319,8 @@ resource "azurerm_virtual_machine" "master1vm" {
     network_interface_ids = ["${azurerm_network_interface.master1NIC.id}"]
     availability_set_id = "${azurerm_availability_set.masterAS.id}"
     vm_size = "${var.master_vm_size}"
+    delete_data_disks_on_termination = "true"
+    delete_os_disk_on_termination = "true"
 
     storage_image_reference {
         publisher = "CoreOS"
@@ -399,6 +405,8 @@ resource "azurerm_virtual_machine" "nodevm" {
     network_interface_ids = ["${element(azurerm_network_interface.nodeNIC.*.id, count.index)}"]
     availability_set_id = "${azurerm_availability_set.nodeAS.id}"
     vm_size = "${var.node_vm_size}"
+    delete_data_disks_on_termination = "true"
+    delete_os_disk_on_termination = "true"
 
     storage_image_reference {
         publisher = "CoreOS"
