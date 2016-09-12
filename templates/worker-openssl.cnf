@@ -7,4 +7,4 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-IP.1 = {{ ansible_default_ipv4.address }}
+IP.1 = {{ hostvars[name]['private_ip'] }}
