@@ -411,8 +411,8 @@ resource "azurerm_virtual_machine" "nodevm" {
     storage_image_reference {
         publisher = "CoreOS"
         offer = "CoreOS"
-        sku = "Beta"
-        version = "latest"
+        sku = "Stable"
+        version = "1122.2.0"
     }
 
     storage_os_disk {
@@ -426,6 +426,7 @@ resource "azurerm_virtual_machine" "nodevm" {
         computer_name = "node-${count.index}-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
+        custom_data = "${base64encode(file("files/coreos-noupdate.yaml"))}"
     }
 
     os_profile_linux_config {
