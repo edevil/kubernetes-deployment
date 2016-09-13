@@ -4,7 +4,7 @@ ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
 Environment="RKT_OPTS=--volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log"
 Environment=KUBELET_VERSION={{ k8s_ver }}
-ExecStart=/root/kubelet-wrapper \
+ExecStart=/kubelet \
   --configure-cbr0=true \
   --pod-cidr={{ pod_network | ipsubnet(24, 254) }} \
   --reconcile-cidr=false \

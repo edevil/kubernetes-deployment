@@ -25,8 +25,12 @@
       copy: src=certs/apiserver.pem dest=/etc/kubernetes/ssl/apiserver.pem mode=0644
     - name: Copy API private key
       copy: src=certs/apiserver-key.pem dest=/etc/kubernetes/ssl/apiserver-key.pem mode=0600
-    - name: Copy Kubelet Wrapper
-      copy: src=kubelet-wrapper dest=/root/kubelet-wrapper mode=0755
+    - name: Get Kubelet
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/{{ k8s_ver_bare }}/bin/linux/amd64/kubelet
+        dest: /kubelet
+    - name: Correct Kubelet permissions
+      file: path=/kubelet mode=755
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
@@ -73,8 +77,12 @@
       copy: src=certs/{{ ansible_fqdn }}-worker.pem dest=/etc/kubernetes/ssl/worker.pem mode=0644
     - name: Copy node private key
       copy: src=certs/{{ ansible_fqdn }}-worker-key.pem dest=/etc/kubernetes/ssl/worker-key.pem mode=0600
-    - name: Copy Kubelet Wrapper
-      copy: src=kubelet-wrapper dest=/root/kubelet-wrapper mode=0755
+    - name: Get Kubelet
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/{{ k8s_ver_bare }}/bin/linux/amd64/kubelet
+        dest: /kubelet
+    - name: Correct Kubelet permissions
+      file: path=/kubelet mode=755
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
