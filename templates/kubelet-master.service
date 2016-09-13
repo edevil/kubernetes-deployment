@@ -16,7 +16,8 @@ ExecStart=/root/kubelet-wrapper \
   --config=/etc/kubernetes/manifests \
   --hostname-override={{ ansible_default_ipv4.address }} \
   --cluster-dns={{ dns_service_ip }} \
-  --cluster-domain=cluster.local
+  --cluster-domain=cluster.local \
+  --node-labels=component_type=master
 Restart=always
 RestartSec=10
 [Install]

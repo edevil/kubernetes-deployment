@@ -294,20 +294,12 @@ resource "azurerm_network_interface" "master1NIC" {
     }
 }
 
-resource "azurerm_subnet" "master1_bridge" {
-    name = "master1_bridge"
-    address_prefix = "${cidrsubnet(var.pod_cidr, 8, 254)}"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    virtual_network_name = "${azurerm_virtual_network.network.name}"
-    route_table_id = "${azurerm_route_table.kubetable.id}"
-}
-
 resource "azurerm_route" "master1_route" {
   name = "route-master1"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   route_table_name = "${azurerm_route_table.kubetable.name}"
 
-  address_prefix = "${azurerm_subnet.master1_bridge.address_prefix}"
+  address_prefix = "${cidrsubnet(var.pod_cidr, 8, 254)}"
   next_hop_type = "VirtualAppliance"
   next_hop_in_ip_address = "${azurerm_network_interface.master1NIC.private_ip_address}"
 }
@@ -325,8 +317,8 @@ resource "azurerm_virtual_machine" "master1vm" {
     storage_image_reference {
         publisher = "CoreOS"
         offer = "CoreOS"
-        sku = "Beta"
-        version = "latest"
+        sku = "Stable"
+        version = "1122.2.0"
     }
 
     storage_os_disk {
@@ -340,6 +332,7 @@ resource "azurerm_virtual_machine" "master1vm" {
         computer_name = "master-1-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
+        custom_data = "${base64encode(file("files/coreos-noupdate.yaml"))}"
     }
 
     os_profile_linux_config {
@@ -378,21 +371,12 @@ resource "azurerm_network_interface" "nodeNIC" {
   count = "${var.num_nodes}"
 }
 
-resource "azurerm_subnet" "node_bridge" {
-    name = "node-${count.index}-bridge"
-    address_prefix = "${cidrsubnet(var.pod_cidr, 8, count.index + 10)}"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    virtual_network_name = "${azurerm_virtual_network.network.name}"
-    route_table_id = "${azurerm_route_table.kubetable.id}"
-    count = "${var.num_nodes}"
-}
-
 resource "azurerm_route" "node_route" {
   name = "route-node-${count.index}"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   route_table_name = "${azurerm_route_table.kubetable.name}"
 
-  address_prefix = "${element(azurerm_subnet.node_bridge.*.address_prefix, count.index)}"
+  address_prefix = "${cidrsubnet(var.pod_cidr, 8, count.index + 10)}"
   next_hop_type = "VirtualAppliance"
   next_hop_in_ip_address = "${element(azurerm_network_interface.nodeNIC.*.private_ip_address, count.index)}"
   count = "${var.num_nodes}"

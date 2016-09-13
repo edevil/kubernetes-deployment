@@ -17,6 +17,7 @@ ExecStart=/root/kubelet-wrapper \
   --hostname-override={{ ansible_default_ipv4.address }} \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
+  --node-labels=component_type=node \
   --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
   --tls-cert-file=/etc/kubernetes/ssl/worker.pem \
   --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem
