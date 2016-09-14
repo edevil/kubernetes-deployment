@@ -51,10 +51,6 @@
       template: src=scheduler.yaml dest=/etc/kubernetes/manifests/kube-scheduler.yaml
     - name: Reload systemd daemons
       shell: systemctl daemon-reload
-    - name: Configure pod network
-      shell: curl -X PUT -d "value={\"Network\":\"{{ pod_network }}\",\"Backend\":{\"Type\":\"vxlan\"}}" "http://{{ hostvars[groups['etcd'][0]]['ansible_eth0']['ipv4']['address'] }}:2379/v2/keys/coreos.com/network/config"
-      args:
-        warn: False
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
     - name: Wait for API to spin up
