@@ -77,7 +77,11 @@ In order to manage the Kubernetes cluster you need to configure the `kubectl` co
 
 The kubelet was configured to use a DNS service running on Kubernetes, so we need to provision the Kubernetes DNS addon. This helps in the discovery of services running in the Kubernetes cluster.
 
-    kubectl create -f files/dns-addon.yml
+    # create service
+    kubectl create -f files/kubedns-svc.yaml
+
+    # create deployment
+    kubectl create -f files/kubedns-depl.yaml
 
 ## Create Azure load-balancer for nodes
 
