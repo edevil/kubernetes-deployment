@@ -1,0 +1,26 @@
+#cloud-config
+coreos:
+  update:
+    reboot-strategy: "off"
+  units:
+    - name: update-engine.service
+      command: stop
+    - name: locksmithd.service
+      command: stop
+write_files:
+  - path: /etc/kubernetes/azure.json
+    permissions: "0644"
+    owner: "root"
+    content: |
+      {
+          "tenantId": "${tenant_id}",
+          "subscriptionId": "${subscription_id}",
+          "resourceGroup": "${resource_group}",
+          "servicePrincipalClientId": "${client_id}",
+          "servicePrincipalClientSecret": "${client_secret}",
+          "location": "${location}",
+          "subnetName": "${subnet_name}",
+          "securityGroupName": "${security_group}",
+          "vnetName": "${vnet_name}",
+          "routeTableName": "${route_table_name}"
+      }

@@ -46,6 +46,25 @@ variable "client_id" {}
 variable "client_secret" {}
 variable "tenant_id" {}
 
+# cloud-config template
+resource "template_file" "kubecloudconfig" {
+  template = "${file("templates/coreos-cloudconfig.yaml")}"
+
+  vars {
+    tenant_id = "${var.tenant_id}"
+    subscription_id = "${var.subscription_id}"
+    resource_group = "${var.resource_group}"
+    client_id = "${var.client_id}"
+    client_secret = "${var.client_secret}"
+    tenant_id = "${var.tenant_id}"
+    location = "${var.region}"
+    subnet_name = "${azurerm_subnet.node.name}"
+    security_group = "${azurerm_network_security_group.kubesg.name}"
+    vnet_name = "${var.virtual_network_name}"
+    route_table_name = "${azurerm_route_table.kubetable.name}"
+  }
+}
+
 # Configure the Azure Resource Manager Provider
 provider "azurerm" {
     subscription_id = "${var.subscription_id}"
@@ -74,6 +93,12 @@ resource "azurerm_route_table" "kubetable" {
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
 }
 
+resource "azurerm_network_security_group" "kubesg" {
+  name = "kube-security-group"
+  location = "${var.region}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+}
+
 resource "azurerm_subnet" "etcd" {
     name = "etcd"
     address_prefix = "10.0.1.0/24"
@@ -96,6 +121,7 @@ resource "azurerm_subnet" "node" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     virtual_network_name = "${azurerm_virtual_network.network.name}"
     route_table_id = "${azurerm_route_table.kubetable.id}"
+    network_security_group_id = "${azurerm_network_security_group.kubesg.id}"
 }
 
 resource "azurerm_subnet" "management" {
@@ -332,7 +358,7 @@ resource "azurerm_virtual_machine" "master1vm" {
         computer_name = "master-1-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
-        custom_data = "${base64encode(file("files/coreos-noupdate.yaml"))}"
+        custom_data = "${base64encode(template_file.kubecloudconfig.rendered)}"
     }
 
     os_profile_linux_config {
@@ -410,7 +436,7 @@ resource "azurerm_virtual_machine" "nodevm" {
         computer_name = "node-${count.index}-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
-        custom_data = "${base64encode(file("files/coreos-noupdate.yaml"))}"
+        custom_data = "${base64encode(template_file.kubecloudconfig.rendered)}"
     }
 
     os_profile_linux_config {
