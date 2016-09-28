@@ -12,7 +12,7 @@ These scripts provision a Kubernetes cluster with a separate etcd cluster. The e
  * If we're rebuilding a previous infrastructure, make sure to delete previous SSH keys from `known_hosts`.
  * Ansible >= 2.1
  * Azure Python SDK >= 2.0.0rc3
- * Terraform >= 0.7 RC2
+ * Terraform >= 0.7
  * Azure Xplat-CLI >= 0.10.1
 
 ## Configure authentication

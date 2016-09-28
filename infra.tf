@@ -47,7 +47,7 @@ variable "client_secret" {}
 variable "tenant_id" {}
 
 # cloud-config template
-resource "template_file" "kubecloudconfig" {
+data "template_file" "kubecloudconfig" {
   template = "${file("templates/coreos-cloudconfig.yaml")}"
 
   vars {
@@ -358,7 +358,7 @@ resource "azurerm_virtual_machine" "master1vm" {
         computer_name = "master-1-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
-        custom_data = "${base64encode(template_file.kubecloudconfig.rendered)}"
+        custom_data = "${base64encode(data.template_file.kubecloudconfig.rendered)}"
     }
 
     os_profile_linux_config {
@@ -436,7 +436,7 @@ resource "azurerm_virtual_machine" "nodevm" {
         computer_name = "node-${count.index}-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
-        custom_data = "${base64encode(template_file.kubecloudconfig.rendered)}"
+        custom_data = "${base64encode(data.template_file.kubecloudconfig.rendered)}"
     }
 
     os_profile_linux_config {
