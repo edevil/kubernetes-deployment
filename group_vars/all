@@ -1,7 +1,7 @@
 ansible_ssh_user: brpxuser
-k8s_ver_bare: v1.3.2
-k8s_ver: "{{k8s_ver_bare}}_coreos.0"
-network_plugin: ""
+k8s_ver_bare: v1.4.0
+k8s_ver: "{{k8s_ver_bare}}_coreos.2"
+network_plugin: "kubenet"
 region: westeurope
 master_fqdn: "{{ resource_group}}-master.{{ region }}.cloudapp.azure.com"
 service_ip_range: 10.3.0.0/24

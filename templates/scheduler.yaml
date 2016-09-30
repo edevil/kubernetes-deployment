@@ -7,6 +7,9 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-scheduler
+    resources:
+      requests:
+        cpu: 100m
     image: quay.io/coreos/hyperkube:{{ k8s_ver }}
     command:
     - /hyperkube

@@ -7,6 +7,9 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-controller-manager
+    resources:
+      requests:
+        cpu: 200m
     image: quay.io/coreos/hyperkube:{{ k8s_ver }}
     command:
     - /hyperkube
@@ -15,6 +18,11 @@ spec:
     - --leader-elect=true
     - --service-account-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --cloud-config=/etc/kubernetes/azure.json
+    - --cloud-provider=azure
+    - --allocate-node-cidrs=true
+    - --cluster-cidr={{ pod_network }}
+    - --cluster-name={{ resource_group}}
     livenessProbe:
       httpGet:
         host: 127.0.0.1
@@ -23,16 +31,16 @@ spec:
       initialDelaySeconds: 15
       timeoutSeconds: 1
     volumeMounts:
-    - mountPath: /etc/kubernetes/ssl
-      name: ssl-certs-kubernetes
+    - mountPath: /etc/kubernetes
+      name: etc-kubernetes
       readOnly: true
     - mountPath: /etc/ssl/certs
       name: ssl-certs-host
       readOnly: true
   volumes:
   - hostPath:
-      path: /etc/kubernetes/ssl
-    name: ssl-certs-kubernetes
+      path: /etc/kubernetes
+    name: etc-kubernetes
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host

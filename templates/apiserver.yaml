@@ -7,14 +7,18 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
+    resources:
+      requests:
+        cpu: 250m
     image: quay.io/coreos/hyperkube:{{ k8s_ver }}
     command:
     - /hyperkube
     - apiserver
     - --bind-address=0.0.0.0
     - --etcd-servers={% set comma = joiner(",") %}{% for host in groups['etcd'] %}{{ comma() }}http://{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:2379{% endfor %}
-    
     - --allow-privileged=true
+    - --cloud-config=/etc/kubernetes/azure.json
+    - --cloud-provider=azure
     - --service-cluster-ip-range={{ service_ip_range }}
     - --secure-port=443
     - --advertise-address={{ ansible_default_ipv4.address }}
