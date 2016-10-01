@@ -16,6 +16,7 @@ spec:
     - apiserver
     - --bind-address=0.0.0.0
     - --etcd-servers={% set comma = joiner(",") %}{% for host in groups['etcd'] %}{{ comma() }}http://{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:2379{% endfor %}
+
     - --allow-privileged=true
     - --cloud-config=/etc/kubernetes/azure.json
     - --cloud-provider=azure
