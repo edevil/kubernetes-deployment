@@ -15,9 +15,9 @@ write_files:
       {
           "tenantId": "${tenant_id}",
           "subscriptionId": "${subscription_id}",
+          "aadClientId": "${client_id}",
+          "aadClientSecret": "${client_secret}",
           "resourceGroup": "${resource_group}",
-          "servicePrincipalClientId": "${client_id}",
-          "servicePrincipalClientSecret": "${client_secret}",
           "location": "${location}",
           "subnetName": "${subnet_name}",
           "securityGroupName": "${security_group}",
