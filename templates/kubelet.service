@@ -1,20 +1,38 @@
+[Unit]
+Description=Kubernetes Kubelet Server
+Documentation=https://github.com/kubernetes/kubernetes
+
 [Service]
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
-
-Environment="RKT_OPTS=--volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log"
-Environment=KUBELET_VERSION={{ k8s_ver }}
-ExecStart=/kubelet \
+ExecStartPre=/bin/mkdir -p /var/lib/kubelet
+ExecStartPre=/bin/mount --bind /var/lib/kubelet /var/lib/kubelet
+ExecStartPre=/bin/mount --make-shared /var/lib/kubelet
+ExecStart=/usr/bin/docker run \
+  --net=host \
+  --pid=host \
+  --privileged \
+  -v /dev:/dev \
+  -v /sys:/sys:ro \
+  -v /var/run:/var/run:rw \
+  -v /var/lib/docker/:/var/lib/docker:rw \
+  -v /var/lib/kubelet/:/var/lib/kubelet:shared \
+  -v /srv/kubernetes:/srv/kubernetes:ro \
+  -v /etc/kubernetes:/etc/kubernetes:ro \
+  -v /var/log:/var/log:rw \
+  quay.io/coreos/hyperkube:{{ k8s_ver }} \
+  /hyperkube \
+  kubelet \
   --cloud-provider=azure \
   --cloud-config=/etc/kubernetes/azure.json \
   --reconcile-cidr=true \
   --api-servers=https://{{ master_fqdn }} \
+  --pod-cidr={{ pod_network | ipsubnet(24, ansible_default_ipv4.address.split(".")[-1]) }} \
   --network-plugin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \
   --register-node=true \
   --allow-privileged=true \
   --config=/etc/kubernetes/manifests \
-  --hostname-override={{ ansible_default_ipv4.address }} \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
   --node-labels=component_type=node \
@@ -23,5 +41,7 @@ ExecStart=/kubelet \
   --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem
 Restart=always
 RestartSec=10
+KillMode=process
+
 [Install]
 WantedBy=multi-user.target
