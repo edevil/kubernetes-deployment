@@ -320,16 +320,6 @@ resource "azurerm_network_interface" "master1NIC" {
     }
 }
 
-resource "azurerm_route" "master1_route" {
-  name = "route-master1"
-  resource_group_name = "${azurerm_resource_group.kuberg.name}"
-  route_table_name = "${azurerm_route_table.kubetable.name}"
-
-  address_prefix = "${cidrsubnet(var.pod_cidr, 8, 254)}"
-  next_hop_type = "VirtualAppliance"
-  next_hop_in_ip_address = "${azurerm_network_interface.master1NIC.private_ip_address}"
-}
-
 resource "azurerm_virtual_machine" "master1vm" {
     name = "master-1-vm"
     location = "${var.region}"
@@ -394,17 +384,6 @@ resource "azurerm_network_interface" "nodeNIC" {
         private_ip_address_allocation = "static"
         private_ip_address = "${cidrhost(azurerm_subnet.node.address_prefix, count.index + 10)}"
     }
-  count = "${var.num_nodes}"
-}
-
-resource "azurerm_route" "node_route" {
-  name = "route-node-${count.index}"
-  resource_group_name = "${azurerm_resource_group.kuberg.name}"
-  route_table_name = "${azurerm_route_table.kubetable.name}"
-
-  address_prefix = "${cidrsubnet(var.pod_cidr, 8, count.index + 10)}"
-  next_hop_type = "VirtualAppliance"
-  next_hop_in_ip_address = "${element(azurerm_network_interface.nodeNIC.*.private_ip_address, count.index)}"
   count = "${var.num_nodes}"
 }
 
