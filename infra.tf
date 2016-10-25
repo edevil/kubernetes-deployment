@@ -17,6 +17,10 @@ variable "ssh_key_location" {
     default = "/Users/andre/.ssh/id_rsa.pub"
 }
 
+variable "num_masters" {
+    default = 2
+}
+
 variable "num_nodes" {
     default = 2
 }
@@ -35,10 +39,6 @@ variable "master_vm_size" {
 
 variable "node_vm_size" {
     default = "Standard_A1"
-}
-
-variable "pod_cidr" {
-    default = "10.2.0.0/16"
 }
 
 variable "subscription_id" {}
@@ -124,14 +124,6 @@ resource "azurerm_subnet" "node" {
     network_security_group_id = "${azurerm_network_security_group.kubesg.id}"
 }
 
-resource "azurerm_subnet" "management" {
-    name = "management"
-    address_prefix = "10.0.254.0/24"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    virtual_network_name = "${azurerm_virtual_network.network.name}"
-    route_table_id = "${azurerm_route_table.kubetable.id}"
-}
-
 resource "azurerm_storage_account" "disks_account" {
   name = "${lower(var.resource_group)}disks"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
@@ -144,65 +136,6 @@ resource "azurerm_storage_container" "disks_container" {
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     storage_account_name = "${azurerm_storage_account.disks_account.name}"
     container_access_type = "private"
-}
-
-resource "azurerm_public_ip" "jboxPUBIP" {
-    name = "jumpboxPublicIP"
-    location = "${var.region}"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    public_ip_address_allocation = "dynamic"
-    domain_name_label = "${var.resource_group}-jbox"
-}
-
-resource "azurerm_network_interface" "jboxNIC" {
-    name = "jumpboxnic"
-    location = "${var.region}"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-
-    ip_configuration {
-        name = "jboxipconfiguration"
-        subnet_id = "${azurerm_subnet.management.id}"
-        private_ip_address_allocation = "dynamic"
-        public_ip_address_id = "${azurerm_public_ip.jboxPUBIP.id}"
-    }
-}
-
-resource "azurerm_virtual_machine" "jumpbox" {
-    name = "jumpbox"
-    location = "${var.region}"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    network_interface_ids = ["${azurerm_network_interface.jboxNIC.id}"]
-    vm_size = "Standard_A0"
-    delete_data_disks_on_termination = "true"
-    delete_os_disk_on_termination = "true"
-
-    storage_image_reference {
-        publisher = "Canonical"
-        offer = "UbuntuServer"
-        sku = "16.04.0-LTS"
-        version = "latest"
-    }
-
-    storage_os_disk {
-        name = "jumpboxdisk"
-        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-jumpbox.vhd"
-        caching = "ReadWrite"
-        create_option = "FromImage"
-    }
-
-    os_profile {
-        computer_name = "jumpbox"
-        admin_username = "${var.username}"
-        admin_password = "Password1234!"
-    }
-
-    os_profile_linux_config {
-        disable_password_authentication = true
-        ssh_keys {
-            path = "/home/${var.username}/.ssh/authorized_keys"
-            key_data = "${file("${var.ssh_key_location}")}"
-        }
-    }
 }
 
 resource "azurerm_availability_set" "etcdAS" {
@@ -304,27 +237,79 @@ resource "azurerm_public_ip" "masterPUBIP" {
     domain_name_label = "${var.resource_group}-master"
 }
 
-resource "azurerm_network_interface" "master1NIC" {
-    name = "master1nic"
+resource "azurerm_lb" "masterLB" {
+    name = "masterLB"
+    location = "${var.region}"
+    resource_group_name = "${azurerm_resource_group.kuberg.name}"
+
+    frontend_ip_configuration {
+      name = "PublicIPAddress"
+      public_ip_address_id = "${azurerm_public_ip.masterPUBIP.id}"
+    }
+}
+
+resource "azurerm_lb_backend_address_pool" "masterLBapool" {
+  location = "${var.region}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  loadbalancer_id = "${azurerm_lb.masterLB.id}"
+  name = "BackEndAddressPool"
+}
+
+resource "azurerm_lb_probe" "httpsProbe" {
+  location = "${var.region}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  loadbalancer_id = "${azurerm_lb.masterLB.id}"
+  name = "HTTPSRunningProbe"
+  port = 443
+}
+
+resource "azurerm_lb_rule" "httpsLBrule" {
+  location = "${var.region}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  loadbalancer_id = "${azurerm_lb.masterLB.id}"
+  name = "LBRuleHTTPS"
+  protocol = "Tcp"
+  frontend_port = 443
+  backend_port = 443
+  frontend_ip_configuration_name = "PublicIPAddress"
+  probe_id = "${azurerm_lb_probe.httpsProbe.id}"
+}
+
+resource "azurerm_lb_nat_rule" "sshNATRule" {
+  location = "${var.region}"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  loadbalancer_id = "${azurerm_lb.masterLB.id}"
+  name = "ssh-${count.index}-rule"
+  protocol = "Tcp"
+  frontend_port = "${30000 + count.index}"
+  backend_port = 22
+  frontend_ip_configuration_name = "PublicIPAddress"
+  count = "${var.num_masters}"
+}
+
+resource "azurerm_network_interface" "masterNIC" {
+    name = "master-${count.index}-nic"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_security_group_id = "${azurerm_network_security_group.master-sg.id}"
     enable_ip_forwarding = true
 
     ip_configuration {
-        name = "master1ipconfiguration"
+        name = "master-${count.index}"
         subnet_id = "${azurerm_subnet.master.id}"
         private_ip_address_allocation = "static"
-        private_ip_address = "${cidrhost(azurerm_subnet.master.address_prefix, 1 + 10)}"
-        public_ip_address_id = "${azurerm_public_ip.masterPUBIP.id}"
+        private_ip_address = "${cidrhost(azurerm_subnet.master.address_prefix, count.index + 10)}"
+        load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.masterLBapool.id}"]
+        load_balancer_inbound_nat_rules_ids = ["${element(azurerm_lb_nat_rule.sshNATRule.*.id, count.index)}"]
     }
+    count = "${var.num_masters}"
 }
 
 resource "azurerm_virtual_machine" "master1vm" {
-    name = "master-1-vm"
+    name = "master-${count.index}-vm"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    network_interface_ids = ["${azurerm_network_interface.master1NIC.id}"]
+    network_interface_ids = ["${element(azurerm_network_interface.masterNIC.*.id, count.index)}"]
     availability_set_id = "${azurerm_availability_set.masterAS.id}"
     vm_size = "${var.master_vm_size}"
     delete_data_disks_on_termination = "true"
@@ -338,14 +323,14 @@ resource "azurerm_virtual_machine" "master1vm" {
     }
 
     storage_os_disk {
-        name = "masterdisk-1"
-        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-master-1.vhd"
+        name = "masterdisk-${count.index}"
+        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-master-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
     }
 
     os_profile {
-        computer_name = "master-1-vm"
+        computer_name = "master-${count.index}-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
         custom_data = "${base64encode(data.template_file.kubecloudconfig.rendered)}"
@@ -364,6 +349,8 @@ resource "azurerm_virtual_machine" "master1vm" {
         coreos = ""
         jbox = ""
     }
+
+    count = "${var.num_masters}"
 }
 
 resource "azurerm_availability_set" "nodeAS" {
