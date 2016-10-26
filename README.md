@@ -13,7 +13,6 @@ These scripts provision a Kubernetes cluster with a separate etcd cluster. The e
  * Ansible >= 2.1.2.0
  * Azure Python SDK >= 2.0.0rc5
  * Terraform >= 0.7.8
- * Azure Xplat-CLI >= 0.10.6
 
 ## Configure authentication
 
@@ -82,57 +81,3 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
     # create deployment
     kubectl create -f files/kubedns-depl.yaml
-
-## Create Azure load-balancer for nodes
-
-Neither Terraform nor Ansible as of now support the provisioning of Azure load-balancers, so this step needs the Azure xplat CLI. In the example bellow two applications running on Kubernetes, with NodePorts 31000 and 31082, are exposed via 2 separate DNS addresses. The `westeurope` region is used by the provisioning scripts, so you may want to:
-
-    export A_LOCATION=westeurope
-
-### Provision two different public IPs
-
-One IP for each app.
-
-    azure network public-ip create -d guestbook-brpx $RESOURCE_GROUP public-ip-guestbook $A_LOCATION
-    azure network public-ip create -d roamersin-brpx $RESOURCE_GROUP public-ip-roamersin $A_LOCATION
-
-### Create the load-balancer
-
-    azure network lb create $RESOURCE_GROUP KubeNodeLB $A_LOCATION
-
-### Create frontend pools
-
-One pool per public ip.
-
-    azure network lb frontend-ip create $RESOURCE_GROUP KubeNodeLB GuestFrontPool -i public-ip-guestbook
-    azure network lb frontend-ip create $RESOURCE_GROUP KubeNodeLB RoamersFrontPool -i public-ip-roamersin
-
-### Create backend pool
-
-Only one backend pool is needed.
-
-    azure network lb address-pool create $RESOURCE_GROUP KubeNodeLB NodeBackPool
-
-### Add node NICs to backend pool
-
-All node's NICs need to be added to the backend pool.
-
-    azure network nic ip-config address-pool create $RESOURCE_GROUP node-0-nic -l KubeNodeLB -a NodeBackPool
-    azure network nic ip-config address-pool create $RESOURCE_GROUP node-1-nic -l KubeNodeLB -a NodeBackPool
-
-### Configure health probe
-
-    azure network lb probe create -g $RESOURCE_GROUP -l KubeNodeLB -n healthprobe -p "tcp" -o 22 -i 10 -c 2
-
-### Create LB rules
-
-    azure network lb rule create $RESOURCE_GROUP KubeNodeLB guestbook -p tcp -f 80 -b 31082 -t GuestFrontPool -o NodeBackPool -a healthprobe
-    azure network lb rule create $RESOURCE_GROUP KubeNodeLB roamersin -p tcp -f 80 -b 31000 -t RoamersFrontPool -o NodeBackPool -a healthprobe
-
-## Exposing new Kubernetes app
-
-In order to expose a new app running on the Kubernetes cluster it must have a service configured with a NodePort. Then follow the steps from the creation of the load-balancer:
-
- 1. Create a new public IP
- 2. Create a new LB frontend pool with the new IP
- 3. Create LB rule to map traffic directed at that IP to the NodePort in the Kubernetes cluster
