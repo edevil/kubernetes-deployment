@@ -340,6 +340,7 @@ resource "azurerm_lb_rule" "httpsLBrule" {
   backend_port = 443
   frontend_ip_configuration_name = "PublicIPAddress"
   probe_id = "${azurerm_lb_probe.httpsProbe.id}"
+  backend_address_pool_id = "${azurerm_lb_backend_address_pool.masterLBapool.id}"
 }
 
 resource "azurerm_network_interface" "masterNIC" {

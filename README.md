@@ -11,7 +11,7 @@ These scripts provision a Kubernetes cluster with a separate etcd cluster. The e
  * The host node where these scripts will be run needs to have a Python 2 environment, Ansible requires it.
  * If we're rebuilding a previous infrastructure, make sure to delete previous SSH keys from `known_hosts`.
  * Ansible >= 2.1.2.0
- * Azure Python SDK >= 2.0.0rc3
+ * Azure Python SDK >= 2.0.0rc5
  * Terraform >= 0.7.8
  * Azure Xplat-CLI >= 0.10.6
 
