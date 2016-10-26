@@ -294,19 +294,6 @@ resource "azurerm_network_security_group" "master-sg" {
         source_address_prefix = "*"
         destination_address_prefix = "*"
     }
-
-    security_rule {
-        name = "allow_ssh"
-        priority = 110
-        direction = "Inbound"
-        access = "Allow"
-        protocol = "Tcp"
-        source_port_range = "*"
-        destination_port_range = "22"
-        source_address_prefix = "*"
-        destination_address_prefix = "*"
-    }
-
 }
 
 resource "azurerm_public_ip" "masterPUBIP" {
@@ -355,18 +342,6 @@ resource "azurerm_lb_rule" "httpsLBrule" {
   probe_id = "${azurerm_lb_probe.httpsProbe.id}"
 }
 
-resource "azurerm_lb_nat_rule" "sshMasterNATRule" {
-  location = "${var.region}"
-  resource_group_name = "${azurerm_resource_group.kuberg.name}"
-  loadbalancer_id = "${azurerm_lb.masterLB.id}"
-  name = "ssh-master-${count.index}-rule"
-  protocol = "Tcp"
-  frontend_port = "${30000 + count.index}"
-  backend_port = 22
-  frontend_ip_configuration_name = "PublicIPAddress"
-  count = "${var.num_masters}"
-}
-
 resource "azurerm_network_interface" "masterNIC" {
     name = "master-${count.index}-nic"
     location = "${var.region}"
@@ -380,7 +355,6 @@ resource "azurerm_network_interface" "masterNIC" {
         private_ip_address_allocation = "static"
         private_ip_address = "${cidrhost(azurerm_subnet.master.address_prefix, count.index + 10)}"
         load_balancer_backend_address_pools_ids = ["${azurerm_lb_backend_address_pool.masterLBapool.id}"]
-        load_balancer_inbound_nat_rules_ids = ["${element(azurerm_lb_nat_rule.sshMasterNATRule.*.id, count.index)}"]
     }
     count = "${var.num_masters}"
 }
