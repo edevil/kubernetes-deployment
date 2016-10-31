@@ -4,7 +4,7 @@ Automated scripts to provision a Kubernetes cluster on the Azure cloud, based on
 
 ## Introduction
 
-These scripts provision a Kubernetes cluster with a separate etcd cluster. The etcd cluster has 3 VMs, this number can be overridden when launching the Terraform script. The Kubernetes cluster has 1 master VM and 2 node VMs, the number of node VMs can also be configured when launching the Terraform script. For now the number of master nodes is not configurable, but since all state is stored in etcd which has a HA configuration, a new master VMs can be spin up quickly if it has problems. There is also a jumpbox with a public SSH endpoint that can be used for accessing the VMs inside the virtual network.
+These scripts provision a Kubernetes cluster with a separate etcd cluster. The etcd cluster has 3 VMs, this number can be overridden when launching the Terraform script. The Kubernetes cluster has 2 master VMs and 2 node VMs, these numbers can also be configured when launching the Terraform script. There is also a jumpbox with a public SSH endpoint that can be used for accessing the VMs inside the virtual network.
 
 ## Prerequisites
 
