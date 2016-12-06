@@ -374,7 +374,7 @@ resource "azurerm_virtual_machine" "master1vm" {
         publisher = "CoreOS"
         offer = "CoreOS"
         sku = "Stable"
-        version = "1122.2.0"
+        version = "latest"
     }
 
     storage_os_disk {
@@ -443,7 +443,7 @@ resource "azurerm_virtual_machine" "nodevm" {
         publisher = "CoreOS"
         offer = "CoreOS"
         sku = "Stable"
-        version = "1122.2.0"
+        version = "latest"
     }
 
     storage_os_disk {

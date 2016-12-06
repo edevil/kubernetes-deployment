@@ -25,7 +25,6 @@ ExecStart=/usr/bin/docker run \
   kubelet \
   --cloud-provider=azure \
   --cloud-config=/etc/kubernetes/azure.json \
-  --reconcile-cidr=true \
   --api-servers=https://{{ master_fqdn }} \
   --network-plugin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \
