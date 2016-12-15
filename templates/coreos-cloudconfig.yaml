@@ -1,4 +1,7 @@
 #cloud-config
+coreos:
+  update:
+    reboot-strategy: "off"
 write_files:
   - path: /etc/kubernetes/azure.json
     permissions: "0644"

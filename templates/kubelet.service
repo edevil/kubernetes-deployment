@@ -11,7 +11,8 @@ Environment=KUBELET_VERSION={{ k8s_ver }}
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cloud-provider=azure \
   --cloud-config=/etc/kubernetes/azure.json \
-  --api-servers=https://{{ master_fqdn }} \
+  --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
+  --require-kubeconfig \
   --network-plugin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \
   --register-node=true \
@@ -19,10 +20,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --pod-manifest-path=/etc/kubernetes/manifests \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
-  --node-labels=component_type=node \
-  --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
-  --tls-cert-file=/etc/kubernetes/ssl/worker.pem \
-  --tls-private-key-file=/etc/kubernetes/ssl/worker-key.pem
+  --node-labels=component_type=node
 Restart=always
 RestartSec=10
 KillMode=process
