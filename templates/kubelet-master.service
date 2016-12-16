@@ -6,7 +6,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 
-Environment="RKT_OPTS=--volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume=usr-sbin,kind=host,source=/usr/sbin --mount=volume=usr-sbin,target=/usr/sbin"
+Environment="RKT_OPTS=--volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log"
 Environment=KUBELET_VERSION={{ k8s_ver }}
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cloud-provider=azure \
