@@ -20,6 +20,8 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --pod-manifest-path=/etc/kubernetes/manifests \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
+  --client-ca-file=/etc/kubernetes/ssl/ca.pem \
+  --anonymous-auth=false \
   --node-labels=component_type=node
 Restart=always
 RestartSec=10

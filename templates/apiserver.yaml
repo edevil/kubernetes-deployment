@@ -30,6 +30,8 @@ spec:
     - --token-auth-file=/etc/kubernetes/tokens.csv
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/thirdpartyresources=true
+    - --kubelet-client-certificate=/etc/kubernetes/ssl/apiserver.pem
+    - --kubelet-client-key=/etc/kubernetes/ssl/apiserver-key.pem
     ports:
     - containerPort: 443
       hostPort: 443
