@@ -190,6 +190,11 @@ resource "azurerm_virtual_machine" "jumpbox" {
         create_option = "FromImage"
     }
 
+    boot_diagnostics {
+        enabled = true
+        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
+    }
+
     os_profile {
         computer_name = "jumpbox"
         admin_username = "${var.username}"
@@ -247,6 +252,11 @@ resource "azurerm_virtual_machine" "etcdvm" {
         vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-etcd-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
+    }
+
+    boot_diagnostics {
+        enabled = true
+        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
@@ -384,6 +394,11 @@ resource "azurerm_virtual_machine" "master1vm" {
         create_option = "FromImage"
     }
 
+    boot_diagnostics {
+        enabled = true
+        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
+    }
+
     os_profile {
         computer_name = "master-${count.index}-vm"
         admin_username = "${var.username}"
@@ -451,6 +466,11 @@ resource "azurerm_virtual_machine" "nodevm" {
         vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-node-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
+    }
+
+    boot_diagnostics {
+        enabled = true
+        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
