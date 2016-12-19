@@ -5,6 +5,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 [Service]
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
+ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 
 Environment="RKT_OPTS=--volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules"
 Environment=KUBELET_VERSION={{ k8s_ver }}

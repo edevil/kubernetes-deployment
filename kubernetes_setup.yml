@@ -3,6 +3,14 @@
   become: yes
   tags: ectd
   tasks:
+    - name: Create certificates directory
+      file: path=/etc/kubernetes/ssl state=directory
+    - name: Copy CA SSL certificate
+      copy: src=certs/ca.pem dest=/etc/kubernetes/ssl/ca.pem mode=0644
+    - name: Copy node certificate
+      copy: src=certs/{{ ansible_fqdn }}-worker.pem dest=/etc/kubernetes/ssl/worker.pem mode=0644 owner=etcd
+    - name: Copy node private key
+      copy: src=certs/{{ ansible_fqdn }}-worker-key.pem dest=/etc/kubernetes/ssl/worker-key.pem mode=0600 owner=etcd
     - name: Create etcd config dir
       file: path=/etc/systemd/system/etcd2.service.d state=directory
     - name: Configure etcd
