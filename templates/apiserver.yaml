@@ -15,7 +15,7 @@ spec:
     - /hyperkube
     - apiserver
     - --bind-address=0.0.0.0
-    - --etcd-servers={% set comma = joiner(",") %}{% for host in groups['etcd'] %}{{ comma() }}http://{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:2379{% endfor %}
+    - --etcd-servers={% set comma = joiner(",") %}{% for host in groups['etcd'] %}{{ comma() }}https://{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:2379{% endfor %}
 
     - --allow-privileged=true
     - --cloud-config=/etc/kubernetes/azure.json
@@ -24,6 +24,9 @@ spec:
     - --secure-port=443
     - --advertise-address={{ ansible_default_ipv4.address }}
     - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+    - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
+    - --etcd-certfile=/etc/kubernetes/ssl/apiserver.pem
+    - --etcd-keyfile=/etc/kubernetes/ssl/apiserver-key.pem
     - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
