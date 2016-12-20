@@ -17,6 +17,10 @@ variable "ssh_key_location" {
     default = "/Users/andre/.ssh/id_rsa.pub"
 }
 
+variable "etcd_cloudinit_location" {
+    default = "templates/coreos-etcd-cloudconfig.yaml"
+}
+
 variable "num_masters" {
     default = 2
 }
@@ -263,6 +267,7 @@ resource "azurerm_virtual_machine" "etcdvm" {
         computer_name = "etcd-${count.index}-vm"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
+        custom_data = "${base64encode(file("${var.etcd_cloudinit_location}"))}"
     }
 
     os_profile_linux_config {
