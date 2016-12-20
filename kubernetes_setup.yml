@@ -77,6 +77,10 @@
       copy: src=certs/{{ ansible_fqdn }}-worker.pem dest=/etc/kubernetes/ssl/worker.pem mode=0644
     - name: Copy node private key
       copy: src=certs/{{ ansible_fqdn }}-worker-key.pem dest=/etc/kubernetes/ssl/worker-key.pem mode=0600
+    - name: Create locksmithd systemd dropin dir
+      file: path=/etc/systemd/system/locksmithd.service.d state=directory
+    - name: Write locksmithd configuration
+      template: src=lock-remote.conf dest=/etc/systemd/system/locksmithd.service.d/40-lock-remote.conf
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
