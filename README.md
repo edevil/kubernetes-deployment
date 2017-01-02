@@ -81,3 +81,39 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
     # create deployment
     kubectl create -f files/kubedns-depl.yaml
+
+# Optional components
+
+## Logging
+
+### Create ConfigMap
+
+The file ```files/td-agent.conf``` contains an example configuration that can be adapted to logz.io or logentries.com.  After editing it, create the configmap.
+
+    kubectl create configmap fluentd-config --from-file=files/td-agent.conf --namespace=kube-system
+
+### Create DaemonSet
+
+This DaemonSet will ensure that a fluentd daemon will run on every node.
+
+    kubectl create -f files/fluentd-ds.yml
+
+## Nginx Ingress Controller + Kube-Lego
+
+Based on [this](https://github.com/jetstack/kube-lego/tree/master/examples/nginx).
+
+### Create namespaces
+
+    kubectl apply -f nginx_ingress/nginx/00-namespace.yaml
+    kubectl apply -f nginx_ingress/lego/00-namespace.yaml
+
+### Create default backend
+
+    kubectl apply -f nginx_ingress/nginx/default-deployment.yaml
+    kubectl apply -f nginx_ingress/nginx/default-service.yaml
+
+### Nginx config, deployment and service
+
+    kubectl apply -f nginx_ingress/nginx/configmap.yaml
+    kubectl apply -f nginx_ingress/nginx/service.yaml
+    kubectl apply -f nginx_ingress/nginx/deployment.yaml
