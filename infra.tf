@@ -34,15 +34,15 @@ variable "num_etcds" {
 }
 
 variable "etcd_vm_size" {
-    default = "Standard_A1"
+    default = "Standard_A1_v2"
 }
 
 variable "master_vm_size" {
-    default = "Standard_A1"
+    default = "Standard_A1_v2"
 }
 
 variable "node_vm_size" {
-    default = "Standard_A1"
+    default = "Standard_A2_v2"
 }
 
 variable "subscription_id" {}
