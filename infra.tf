@@ -45,6 +45,18 @@ variable "node_vm_size" {
     default = "Standard_A2_v2"
 }
 
+variable "etcd_storage_type" {
+    default = "Standard_LRS"
+}
+
+variable "master_storage_type" {
+    default = "Standard_LRS"
+}
+
+variable "node_storage_type" {
+    default = "Standard_LRS"
+}
+
 variable "subscription_id" {}
 variable "client_id" {}
 variable "client_secret" {}
@@ -136,17 +148,59 @@ resource "azurerm_subnet" "management" {
     route_table_id = "${azurerm_route_table.kubetable.id}"
 }
 
-resource "azurerm_storage_account" "disks_account" {
-  name = "${lower(var.resource_group)}disks"
+resource "azurerm_storage_account" "etcd_disks_account" {
+  name = "${lower(var.resource_group)}etcddisk"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  location = "${var.region}"
+  account_type = "${var.etcd_storage_type}"
+}
+
+resource "azurerm_storage_container" "etcd_disks_container" {
+    name = "vhds"
+    resource_group_name = "${azurerm_resource_group.kuberg.name}"
+    storage_account_name = "${azurerm_storage_account.etcd_disks_account.name}"
+    container_access_type = "private"
+}
+
+resource "azurerm_storage_account" "master_disks_account" {
+  name = "${lower(var.resource_group)}masterdisk"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  location = "${var.region}"
+  account_type = "${var.master_storage_type}"
+}
+
+resource "azurerm_storage_container" "master_disks_container" {
+    name = "vhds"
+    resource_group_name = "${azurerm_resource_group.kuberg.name}"
+    storage_account_name = "${azurerm_storage_account.master_disks_account.name}"
+    container_access_type = "private"
+}
+
+resource "azurerm_storage_account" "node_disks_account" {
+  name = "${lower(var.resource_group)}nodedisk"
+  resource_group_name = "${azurerm_resource_group.kuberg.name}"
+  location = "${var.region}"
+  account_type = "${var.node_storage_type}"
+}
+
+resource "azurerm_storage_container" "node_disks_container" {
+    name = "vhds"
+    resource_group_name = "${azurerm_resource_group.kuberg.name}"
+    storage_account_name = "${azurerm_storage_account.node_disks_account.name}"
+    container_access_type = "private"
+}
+
+resource "azurerm_storage_account" "util_disks_account" {
+  name = "${lower(var.resource_group)}utildisk"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   location = "${var.region}"
   account_type = "Standard_LRS"
 }
 
-resource "azurerm_storage_container" "disks_container" {
+resource "azurerm_storage_container" "util_disks_container" {
     name = "vhds"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    storage_account_name = "${azurerm_storage_account.disks_account.name}"
+    storage_account_name = "${azurerm_storage_account.util_disks_account.name}"
     container_access_type = "private"
 }
 
@@ -189,14 +243,14 @@ resource "azurerm_virtual_machine" "jumpbox" {
 
     storage_os_disk {
         name = "jumpboxdisk"
-        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-jumpbox.vhd"
+        vhd_uri = "${azurerm_storage_account.util_disks_account.primary_blob_endpoint}${azurerm_storage_container.util_disks_container.name}/${azurerm_resource_group.kuberg.name}-jumpbox.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
     }
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.util_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
@@ -253,14 +307,14 @@ resource "azurerm_virtual_machine" "etcdvm" {
 
     storage_os_disk {
         name = "etcddisk-${count.index}"
-        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-etcd-${count.index}.vhd"
+        vhd_uri = "${azurerm_storage_account.etcd_disks_account.primary_blob_endpoint}${azurerm_storage_container.etcd_disks_container.name}/${azurerm_resource_group.kuberg.name}-etcd-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
     }
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.etcd_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
@@ -394,14 +448,14 @@ resource "azurerm_virtual_machine" "master1vm" {
 
     storage_os_disk {
         name = "masterdisk-${count.index}"
-        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-master-${count.index}.vhd"
+        vhd_uri = "${azurerm_storage_account.master_disks_account.primary_blob_endpoint}${azurerm_storage_container.master_disks_container.name}/${azurerm_resource_group.kuberg.name}-master-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
     }
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.master_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
@@ -468,14 +522,14 @@ resource "azurerm_virtual_machine" "nodevm" {
 
     storage_os_disk {
         name = "nodedisk-${count.index}"
-        vhd_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}${azurerm_storage_container.disks_container.name}/${azurerm_resource_group.kuberg.name}-node-${count.index}.vhd"
+        vhd_uri = "${azurerm_storage_account.node_disks_account.primary_blob_endpoint}${azurerm_storage_container.node_disks_container.name}/${azurerm_resource_group.kuberg.name}-node-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
     }
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.node_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
