@@ -117,3 +117,16 @@ Based on [this](https://github.com/jetstack/kube-lego/tree/master/examples/nginx
     kubectl apply -f nginx_ingress/nginx/configmap.yaml
     kubectl apply -f nginx_ingress/nginx/service.yaml
     kubectl apply -f nginx_ingress/nginx/deployment.yaml
+
+### Kube-Lego config and deployment
+
+Change the email address on the config file before creating it.
+
+    kubectl apply -f nginx_ingress/lego/configmap.yaml
+    kubectl apply -f nginx_ingress/lego/deployment.yaml
+
+
+# Upgrade notes
+
+1. Upgrade kubelet image version that is used with kubelet-wrapper. This is done on the kubelet.service unit file.
+1. ...
