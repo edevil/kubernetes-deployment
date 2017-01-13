@@ -128,5 +128,6 @@ Change the email address on the config file before creating it.
 
 # Upgrade notes
 
-1. Upgrade kubelet image version that is used with kubelet-wrapper. This is done on the kubelet.service unit file.
+1. Upgrade kubelet image version that is used with kubelet-wrapper. This is done on the kubelet.service unit file on master and node components.
+1. systemctl daemon-reload && systemctl restart kubelet
 1. ...
