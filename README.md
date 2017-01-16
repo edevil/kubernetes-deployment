@@ -130,4 +130,6 @@ Change the email address on the config file before creating it.
 
 1. Upgrade kubelet image version that is used with kubelet-wrapper. This is done on the kubelet.service unit file on master and node components.
 1. systemctl daemon-reload && systemctl restart kubelet
-1. ...
+1. On the master components, alter the image tag on the pod manifests (/etc/kubernetes/manifests/). Be careful not to edit the files in place otherwise the editor may place swap files, etc, on the manifests dir, which will cause havoc with kubelet. It's best to edit the files somewhere else and then copy over.
+1. On the node compoenents, alter the image tag on the kube proxy manifest. The same care should be taken as in the case of the master components.
+1. Wait for the last components to come up. The upgrade is finished.
