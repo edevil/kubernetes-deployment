@@ -7,7 +7,7 @@ ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 
-Environment="RKT_RUN_ARGS=--volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules"
+Environment="RKT_RUN_ARGS=--volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules --volume etc-resolv,kind=host,source=/etc/resolv.conf --mount volume=etc-resolv,target=/etc/resolv.conf"
 Environment=KUBELET_IMAGE_TAG={{ k8s_ver }}
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cloud-provider=azure \
