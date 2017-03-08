@@ -163,6 +163,7 @@ Run ansible playbooks restricted to that resource.
     export ANSIBLE_CACHE_PLUGIN=jsonfile
     export ANSIBLE_CACHE_PLUGIN_CONNECTION=/tmp/ansible_cache
     export ANSIBLE_CACHE_PLUGIN_TIMEOUT=86400
-    ansible -i azure_rm.py all --limit $RESOURCE_GROUP -m setup
+    rm -fr /tmp/ansible_cache
     ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP bootstrap.yml --limit node-0-vm
+    ansible -i azure_rm.py all --limit $RESOURCE_GROUP -m setup
     ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP kubernetes_setup.yml --limit node-0-vm
