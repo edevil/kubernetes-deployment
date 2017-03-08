@@ -385,14 +385,12 @@ resource "azurerm_lb" "masterLB" {
 }
 
 resource "azurerm_lb_backend_address_pool" "masterLBapool" {
-  location = "${var.region}"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   loadbalancer_id = "${azurerm_lb.masterLB.id}"
   name = "BackEndAddressPool"
 }
 
 resource "azurerm_lb_probe" "httpsProbe" {
-  location = "${var.region}"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   loadbalancer_id = "${azurerm_lb.masterLB.id}"
   name = "HTTPSRunningProbe"
@@ -400,7 +398,6 @@ resource "azurerm_lb_probe" "httpsProbe" {
 }
 
 resource "azurerm_lb_rule" "httpsLBrule" {
-  location = "${var.region}"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   loadbalancer_id = "${azurerm_lb.masterLB.id}"
   name = "LBRuleHTTPS"
