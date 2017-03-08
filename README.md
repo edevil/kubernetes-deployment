@@ -133,3 +133,36 @@ Change the email address on the config file before creating it.
 1. On the master components, alter the image tag on the pod manifests (/etc/kubernetes/manifests/). Be careful not to edit the files in place otherwise the editor may place swap files, etc, on the manifests dir, which will cause havoc with kubelet. It's best to edit the files somewhere else and then copy over.
 1. On the node compoenents, alter the image tag on the kube proxy manifest. The same care should be taken as in the case of the master components.
 1. Wait for the last components to come up. The upgrade is finished.
+
+
+# Procedure to re-create node (ex: node-0-vm)
+
+## Drain node
+
+Drain kube node (for schedulable nodes) in order to move all running pods to an healthy node. If DaemonSet are used, the --force flag has to be used since there pods will stay running in the node.
+
+    kubectl drain node-0-vm --force
+
+## Taint VM
+
+Taint terraform resource in order for the infrastructure to be re-created.
+
+    terraform taint "azurerm_virtual_machine.nodevm.0"
+
+## Apply Terraform
+
+Apply terraform and restrict to that resource. This will delete and create the VM, and just that VM.
+
+    terraform apply -var "resource_group=$RESOURCE_GROUP" -target="azurerm_virtual_machine.nodevm[0]"
+
+## Run Ansible playbook
+
+Run ansible playbooks restricted to that resource.
+
+    export ANSIBLE_GATHERING=smart
+    export ANSIBLE_CACHE_PLUGIN=jsonfile
+    export ANSIBLE_CACHE_PLUGIN_CONNECTION=/tmp/ansible_cache
+    export ANSIBLE_CACHE_PLUGIN_TIMEOUT=86400
+    ansible -i azure_rm.py all --limit $RESOURCE_GROUP -m setup
+    ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP bootstrap.yml --limit node-0-vm
+    ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP kubernetes_setup.yml --limit node-0-vm
