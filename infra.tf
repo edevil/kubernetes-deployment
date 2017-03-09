@@ -426,7 +426,7 @@ resource "azurerm_network_interface" "masterNIC" {
     count = "${var.num_masters}"
 }
 
-resource "azurerm_virtual_machine" "master1vm" {
+resource "azurerm_virtual_machine" "mastervm" {
     name = "master-${count.index}-vm"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
