@@ -141,7 +141,7 @@ Change the email address on the config file before creating it.
 
 Drain kube node (for schedulable nodes) in order to move all running pods to an healthy node. If DaemonSet are used, the --force flag has to be used since there pods will stay running in the node.
 
-    kubectl drain node-0-vm --force
+    kubectl drain node-0-vm --ignore-daemonsets --force
 
 ## Taint VM
 
