@@ -148,48 +148,6 @@ resource "azurerm_subnet" "management" {
     route_table_id = "${azurerm_route_table.kubetable.id}"
 }
 
-resource "azurerm_storage_account" "etcd_disks_account" {
-  name = "${lower(var.resource_group)}etcddisk"
-  resource_group_name = "${azurerm_resource_group.kuberg.name}"
-  location = "${var.region}"
-  account_type = "${var.etcd_storage_type}"
-}
-
-resource "azurerm_storage_container" "etcd_disks_container" {
-    name = "vhds"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    storage_account_name = "${azurerm_storage_account.etcd_disks_account.name}"
-    container_access_type = "private"
-}
-
-resource "azurerm_storage_account" "master_disks_account" {
-  name = "${lower(var.resource_group)}masterdisk"
-  resource_group_name = "${azurerm_resource_group.kuberg.name}"
-  location = "${var.region}"
-  account_type = "${var.master_storage_type}"
-}
-
-resource "azurerm_storage_container" "master_disks_container" {
-    name = "vhds"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    storage_account_name = "${azurerm_storage_account.master_disks_account.name}"
-    container_access_type = "private"
-}
-
-resource "azurerm_storage_account" "node_disks_account" {
-  name = "${lower(var.resource_group)}nodedisk"
-  resource_group_name = "${azurerm_resource_group.kuberg.name}"
-  location = "${var.region}"
-  account_type = "${var.node_storage_type}"
-}
-
-resource "azurerm_storage_container" "node_disks_container" {
-    name = "vhds"
-    resource_group_name = "${azurerm_resource_group.kuberg.name}"
-    storage_account_name = "${azurerm_storage_account.node_disks_account.name}"
-    container_access_type = "private"
-}
-
 resource "azurerm_storage_account" "util_disks_account" {
   name = "${lower(var.resource_group)}utildisk"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
@@ -271,6 +229,7 @@ resource "azurerm_virtual_machine" "jumpbox" {
 resource "azurerm_availability_set" "etcdAS" {
     name = "ETCDAS"
     location = "${var.region}"
+    managed = true
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
 }
 
@@ -307,9 +266,9 @@ resource "azurerm_virtual_machine" "etcdvm" {
 
     storage_os_disk {
         name = "etcddisk-${count.index}"
-        vhd_uri = "${azurerm_storage_account.etcd_disks_account.primary_blob_endpoint}${azurerm_storage_container.etcd_disks_container.name}/${azurerm_resource_group.kuberg.name}-etcd-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
+        managed_disk_type = "Standard_LRS"
     }
 
     boot_diagnostics {
@@ -344,6 +303,7 @@ resource "azurerm_virtual_machine" "etcdvm" {
 resource "azurerm_availability_set" "masterAS" {
     name = "MASTERAS"
     location = "${var.region}"
+    managed = true
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
 }
 
@@ -445,9 +405,9 @@ resource "azurerm_virtual_machine" "mastervm" {
 
     storage_os_disk {
         name = "masterdisk-${count.index}"
-        vhd_uri = "${azurerm_storage_account.master_disks_account.primary_blob_endpoint}${azurerm_storage_container.master_disks_container.name}/${azurerm_resource_group.kuberg.name}-master-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
+        managed_disk_type = "Standard_LRS"
     }
 
     boot_diagnostics {
@@ -482,6 +442,7 @@ resource "azurerm_virtual_machine" "mastervm" {
 resource "azurerm_availability_set" "nodeAS" {
     name = "NODEAS"
     location = "${var.region}"
+    managed = true
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
 }
 
@@ -519,9 +480,9 @@ resource "azurerm_virtual_machine" "nodevm" {
 
     storage_os_disk {
         name = "nodedisk-${count.index}"
-        vhd_uri = "${azurerm_storage_account.node_disks_account.primary_blob_endpoint}${azurerm_storage_container.node_disks_container.name}/${azurerm_resource_group.kuberg.name}-node-${count.index}.vhd"
         caching = "ReadWrite"
         create_option = "FromImage"
+        managed_disk_type = "Standard_LRS"
     }
 
     boot_diagnostics {
