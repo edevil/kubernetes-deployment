@@ -314,7 +314,7 @@ resource "azurerm_virtual_machine" "etcdvm" {
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.etcd_disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.util_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
@@ -452,7 +452,7 @@ resource "azurerm_virtual_machine" "mastervm" {
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.master_disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.util_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
@@ -526,7 +526,7 @@ resource "azurerm_virtual_machine" "nodevm" {
 
     boot_diagnostics {
         enabled = true
-        storage_uri = "${azurerm_storage_account.node_disks_account.primary_blob_endpoint}"
+        storage_uri = "${azurerm_storage_account.util_disks_account.primary_blob_endpoint}"
     }
 
     os_profile {
