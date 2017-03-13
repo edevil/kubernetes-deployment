@@ -37,7 +37,7 @@ coreos:
         ExecStart=/bin/bash -c -x "umount -A /dev/sdb || /bin/true"
         ExecStart=/bin/bash -c -x "rm -rf /mnt/resource"
         ExecStart=/bin/bash -c -x "wipefs -f /dev/sdb1 || true"
-        ExecStart=/bin/bash -c -x "mkfs.ext4 -F /dev/sdb"
+        ExecStart=/bin/bash -c -x "mkfs.ext4 -F /dev/sdb -T news"
 
         [Install]
         RequiredBy=var-lib-docker.mount

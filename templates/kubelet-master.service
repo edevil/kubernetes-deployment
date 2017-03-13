@@ -23,6 +23,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cluster-domain=cluster.local \
   --client-ca-file=/etc/kubernetes/ssl/ca.pem \
   --anonymous-auth=false \
+  --eviction-hard="memory.available<250Mi,nodefs.available<20%,nodefs.inodesFree<10%,imagefs.available<20%,imagefs.inodesFree<10%" \
   --node-labels=component_type=master
 Restart=always
 RestartSec=10
