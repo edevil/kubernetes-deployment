@@ -2,45 +2,6 @@
 coreos:
   update:
     reboot-strategy: "etcd-lock"
-  units:
-    - name: "var-lib-docker.mount"
-      enable: true
-      content: |
-        [Unit]
-        Description=Mount /var/lib/docker on SSD Ephemeral
-        Documentation=https://coreos.com/os/docs/latest/mounting-storage.html
-        Before=docker.service
-        After=format-ephemeral.service
-        Requires=format-ephemeral.service
-
-        [Mount]
-        What=/dev/sdb
-        Where=/var/lib/docker
-        Type=ext4
-
-        [Install]
-        RequiredBy=docker.service
-    - name: "format-ephemeral.service"
-      enable: true
-      content: |
-        [Unit]
-        Description=Format Ephemeral Volume
-        Documentation=https://coreos.com/os/docs/latest/mounting-storage.html
-        Before=docker.service var-lib-docker.mount
-        After=dev-sdb.device
-        Requires=dev-sdb.device
-
-        [Service]
-        Type=oneshot
-        ExecStart=/bin/bash -c -x "umount -f /mnt/resource || /bin/true"
-        ExecStart=/bin/bash -c -x "umount -A /dev/sdb1 || /bin/true"
-        ExecStart=/bin/bash -c -x "umount -A /dev/sdb || /bin/true"
-        ExecStart=/bin/bash -c -x "rm -rf /mnt/resource"
-        ExecStart=/bin/bash -c -x "wipefs -f /dev/sdb1 || true"
-        ExecStart=/bin/bash -c -x "mkfs.ext4 -F /dev/sdb -T news"
-
-        [Install]
-        RequiredBy=var-lib-docker.mount
 write_files:
   - path: /etc/kubernetes/azure.json
     permissions: "0644"

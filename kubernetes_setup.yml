@@ -31,8 +31,6 @@
   become: yes
   tags: master
   tasks:
-    - name: Dump all vars
-      action: template src=templates/dumpall.j2 dest=/tmp/ansible.all
     - name: Create certificates directory
       file: path=/etc/kubernetes/ssl state=directory
     - name: Copy CA SSL certificate
@@ -45,6 +43,10 @@
       file: path=/etc/systemd/system/locksmithd.service.d state=directory
     - name: Write locksmithd configuration
       template: src=lock-remote.conf dest=/etc/systemd/system/locksmithd.service.d/40-lock-remote.conf
+    - name: Format ephemeral drive
+      copy: src=format-ephemeral.service dest=/etc/systemd/system/format-ephemeral.service mode=0644
+    - name: Mount ephemeral drive
+      copy: src=var-lib-docker.mount dest=/etc/systemd/system/var-lib-docker.mount mode=0644
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
@@ -69,6 +71,10 @@
       shell: systemctl daemon-reload
     - name: Restart locksmithd
       service: name=locksmithd state=restarted enabled=yes
+    - name: Enable formatter
+      service: name=format-ephemeral enabled=yes
+    - name: Enable mounter
+      service: name=var-lib-docker.mount enabled=yes
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
     - name: Wait for API to spin up
@@ -95,6 +101,10 @@
       file: path=/etc/systemd/system/locksmithd.service.d state=directory
     - name: Write locksmithd configuration
       template: src=lock-remote.conf dest=/etc/systemd/system/locksmithd.service.d/40-lock-remote.conf
+    - name: Format ephemeral drive
+      copy: src=format-ephemeral.service dest=/etc/systemd/system/format-ephemeral.service mode=0644
+    - name: Mount ephemeral drive
+      copy: src=var-lib-docker.mount dest=/etc/systemd/system/var-lib-docker.mount mode=0644
     - name: Create Docker systemd dropin dir
       file: path=/etc/systemd/system/docker.service.d state=directory
     - name: Write Docker systemd dropin
@@ -111,5 +121,9 @@
       shell: systemctl daemon-reload
     - name: Restart locksmithd
       service: name=locksmithd state=restarted enabled=yes
+    - name: Enable formatter
+      service: name=format-ephemeral enabled=yes
+    - name: Enable mounter
+      service: name=var-lib-docker.mount enabled=yes
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
