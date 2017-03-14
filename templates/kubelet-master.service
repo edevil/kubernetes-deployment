@@ -23,7 +23,13 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cluster-domain=cluster.local \
   --client-ca-file=/etc/kubernetes/ssl/ca.pem \
   --anonymous-auth=false \
-  --eviction-hard="memory.available<250Mi,nodefs.available<20%,nodefs.inodesFree<10%,imagefs.available<20%,imagefs.inodesFree<10%" \
+  --image-gc-high-threshold=85 \
+  --image-gc-low-threshold=75 \
+  --eviction-max-pod-grace-period=600 \
+  --eviction-minimum-reclaim="memory.available=350Mi,imagefs.available=2Gi,nodefs.available=2Gi" \
+  --eviction-soft="memory.available<300Mi,nodefs.available<14%,nodefs.inodesFree<14%,imagefs.available<14%,imagefs.inodesFree<14%" \
+  --eviction-soft-grace-period="memory.available=1m30s,nodefs.available=1m30s,imagefs.available=1m30s" \
+  --eviction-hard="memory.available<250Mi,nodefs.available<10%,nodefs.inodesFree<10%,imagefs.available<10%,imagefs.inodesFree<10%" \
   --node-labels=component_type=master
 Restart=always
 RestartSec=10
