@@ -1,5 +1,5 @@
 ansible_ssh_user: brpxuser
-k8s_ver_bare: v1.5.4
+k8s_ver_bare: v1.5.5
 k8s_ver: "{{k8s_ver_bare}}_coreos.0"
 network_plugin: "kubenet"
 region: westeurope
