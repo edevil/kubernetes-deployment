@@ -23,7 +23,10 @@ spec:
     - --service-cluster-ip-range={{ service_ip_range }}
     - --secure-port=443
     - --advertise-address={{ ansible_default_ipv4.address }}
-    - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+    - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,DefaultStorageClass,ResourceQuota
+    - --anonymous-auth=false
+    - --storage-backend=etcd2
+    - --storage-media-type=application/json
     - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
     - --etcd-certfile=/etc/kubernetes/ssl/apiserver.pem
     - --etcd-keyfile=/etc/kubernetes/ssl/apiserver-key.pem
@@ -43,22 +46,16 @@ spec:
       hostPort: 8080
       name: local
     volumeMounts:
-    - mountPath: /etc/kubernetes/ssl
-      name: ssl-certs-kubernetes
+    - mountPath: /etc/kubernetes
+      name: etc-kubernetes
       readOnly: true
     - mountPath: /etc/ssl/certs
       name: ssl-certs-host
       readOnly: true
-    - mountPath: /etc/kubernetes/tokens.csv
-      name: ssl-tokens-kubernetes
-      readOnly: true
   volumes:
   - hostPath:
-      path: /etc/kubernetes/ssl
-    name: ssl-certs-kubernetes
+      path: /etc/kubernetes
+    name: etc-kubernetes
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host
-  - hostPath:
-      path: /etc/kubernetes/tokens.csv
-    name: ssl-tokens-kubernetes
