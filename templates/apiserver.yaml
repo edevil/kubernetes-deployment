@@ -25,6 +25,8 @@ spec:
     - --advertise-address={{ ansible_default_ipv4.address }}
     - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,DefaultStorageClass,ResourceQuota
     - --anonymous-auth=false
+    - --authorization-mode=RBAC
+    - --enable-swagger-ui=true
     - --storage-backend=etcd2
     - --storage-media-type=application/json
     - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
@@ -35,7 +37,7 @@ spec:
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --token-auth-file=/etc/kubernetes/tokens.csv
     - --service-account-key-file=/etc/kubernetes/ssl/apiserver-key.pem
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/thirdpartyresources=true
+    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/thirdpartyresources=true,rbac.authorization.k8s.io/v1alpha1
     - --kubelet-client-certificate=/etc/kubernetes/ssl/apiserver.pem
     - --kubelet-client-key=/etc/kubernetes/ssl/apiserver-key.pem
     ports:

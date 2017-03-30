@@ -54,6 +54,31 @@
         chdir: certs/
         creates: "{{ name }}-worker-key.pem"
     - name: Generate worker CSR
+      shell: openssl req -new -key {{ name }}-worker-key.pem -out {{ name }}-worker.csr -subj "/CN=system:node:{{ name }}/O=system:nodes" -config {{ name }}-worker-openssl.cnf
+      args:
+        chdir: certs/
+        creates: "{{ name }}-worker.csr"
+    - name: Generate worker certificate
+      shell: openssl x509 -req -in {{ name }}-worker.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out {{ name }}-worker.pem -days 720 -extensions v3_req -extfile {{ name }}-worker-openssl.cnf
+      args:
+        chdir: certs/
+        creates: "{{ name }}-worker.pem"
+
+- name: Generate etcd Certs
+  hosts: etcd:&{{ resource_group }}
+  connection: local
+  tags: etcdcerts
+  vars:
+    ansible_python_interpreter: "python"
+  tasks:
+    - name: Generate worker template
+      template: src=worker-openssl.cnf dest=certs/{{ name }}-worker-openssl.cnf
+    - name: Generate worker primary key
+      shell: openssl genrsa -out {{ name }}-worker-key.pem 2048
+      args:
+        chdir: certs/
+        creates: "{{ name }}-worker-key.pem"
+    - name: Generate worker CSR
       shell: openssl req -new -key {{ name }}-worker-key.pem -out {{ name }}-worker.csr -subj "/CN={{ name }}" -config {{ name }}-worker-openssl.cnf
       args:
         chdir: certs/
