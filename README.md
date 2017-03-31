@@ -114,6 +114,7 @@ Based on [this](https://github.com/jetstack/kube-lego/tree/master/examples/nginx
 TODO: Add more specific permissions.
 
     kubectl create clusterrolebinding ingress-cluster-admin --clusterrole=cluster-admin --serviceaccount=nginx-ingress:default --namespace=nginx-ingress
+    kubectl create clusterrolebinding lego-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-lego:default --namespace=kube-lego
 
 ### Create default backend
 
