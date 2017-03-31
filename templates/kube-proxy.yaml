@@ -12,18 +12,24 @@ spec:
     - /hyperkube
     - proxy
     - --master=https://{{ master_fqdn }}
-    - --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
+    - --kubeconfig=/etc/kubernetes/proxy-kubeconfig.yaml
     - --proxy-mode=iptables
     securityContext:
       privileged: true
     volumeMounts:
       - mountPath: /etc/ssl/certs
         name: "ssl-certs"
-      - mountPath: /etc/kubernetes/worker-kubeconfig.yaml
+      - mountPath: /etc/kubernetes/proxy-kubeconfig.yaml
         name: "kubeconfig"
         readOnly: true
-      - mountPath: /etc/kubernetes/ssl
-        name: "etc-kube-ssl"
+      - mountPath: /etc/kubernetes/ssl/ca.pem
+        name: "etc-ca-cert"
+        readOnly: true
+      - mountPath: /etc/kubernetes/ssl/proxy.pem
+        name: "etc-proxy-cert"
+        readOnly: true
+      - mountPath: /etc/kubernetes/ssl/proxy-key.pem
+        name: "etc-proxy-key"
         readOnly: true
   volumes:
     - name: "ssl-certs"
@@ -31,7 +37,13 @@ spec:
         path: "/usr/share/ca-certificates"
     - name: "kubeconfig"
       hostPath:
-        path: "/etc/kubernetes/worker-kubeconfig.yaml"
-    - name: "etc-kube-ssl"
+        path: "/etc/kubernetes/proxy-kubeconfig.yaml"
+    - name: "etc-ca-cert"
       hostPath:
-        path: "/etc/kubernetes/ssl"
+        path: "/etc/kubernetes/ssl/ca.pem"
+    - name: "etc-proxy-cert"
+      hostPath:
+        path: "/etc/kubernetes/ssl/proxy.pem"
+    - name: "etc-proxy-key"
+      hostPath:
+        path: "/etc/kubernetes/ssl/proxy-key.pem"

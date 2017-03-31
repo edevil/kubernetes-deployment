@@ -93,6 +93,10 @@
       copy: src=certs/{{ ansible_fqdn }}-worker.pem dest=/etc/kubernetes/ssl/worker.pem mode=0644
     - name: Copy node private key
       copy: src=certs/{{ ansible_fqdn }}-worker-key.pem dest=/etc/kubernetes/ssl/worker-key.pem mode=0600
+    - name: Copy proxy certificate
+      copy: src=certs/proxy.pem dest=/etc/kubernetes/ssl/proxy.pem mode=0644
+    - name: Copy proxy private key
+      copy: src=certs/proxy-key.pem dest=/etc/kubernetes/ssl/proxy-key.pem mode=0600
     - name: Create locksmithd systemd dropin dir
       file: path=/etc/systemd/system/locksmithd.service.d state=directory
     - name: Write locksmithd configuration
@@ -109,10 +113,12 @@
       template: src=kubelet.service dest=/etc/systemd/system/kubelet.service
     - name: Create manifest dir
       file: path=/etc/kubernetes/manifests state=directory
+    - name: Setup kubelet kubeconfig
+      template: src=worker-kubeconfig.yaml dest=/etc/kubernetes/worker-kubeconfig.yaml
+    - name: Setup proxy kubeconfig
+      template: src=proxy-kubeconfig.yaml dest=/etc/kubernetes/proxy-kubeconfig.yaml
     - name: Configure Kube-proxy
       template: src=kube-proxy.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
-    - name: Setup kubeconfig
-      template: src=worker-kubeconfig.yaml dest=/etc/kubernetes/worker-kubeconfig.yaml
     - name: Reload systemd daemons
       shell: systemctl daemon-reload
     - name: Restart locksmithd

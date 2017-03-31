@@ -39,6 +39,27 @@
         chdir: certs/
         creates: apiserver.pem
 
+- name: Generate kube-proxy Cert
+  hosts: localhost
+  connection: local
+  tags: proxycert
+  tasks:
+    - name: Generate kube-proxy primary key
+      shell: openssl genrsa -out proxy-key.pem 2048
+      args:
+        chdir: certs/
+        creates: proxy-key.pem
+    - name: Generate kube-proxy CSR
+      shell: openssl req -new -key proxy-key.pem -out proxy.csr -subj "/CN=system:kube-proxy" -config ../files/proxy-openssl.cnf
+      args:
+        chdir: certs/
+        creates: proxy.csr
+    - name: Generate kube-proxy certificate
+      shell: openssl x509 -req -in proxy.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out proxy.pem -days 720 -extensions v3_req -extfile ../files/proxy-openssl.cnf
+      args:
+        chdir: certs/
+        creates: proxy.pem
+
 - name: Generate workers Certs
   hosts: etcd:node:&{{ resource_group }}
   connection: local
