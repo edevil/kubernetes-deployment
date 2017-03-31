@@ -76,6 +76,9 @@ In order to manage the Kubernetes cluster you need to configure the `kubectl` co
 
 The kubelet was configured to use a DNS service running on Kubernetes, so we need to provision the Kubernetes DNS addon. This helps in the discovery of services running in the Kubernetes cluster.
 
+    # create service account
+    kubectl create -f files/kubedns-sa.yaml
+
     # create service
     kubectl create -f files/kubedns-svc.yaml
 
@@ -106,6 +109,11 @@ Based on [this](https://github.com/jetstack/kube-lego/tree/master/examples/nginx
 
     kubectl apply -f nginx_ingress/nginx/00-namespace.yaml
     kubectl apply -f nginx_ingress/lego/00-namespace.yaml
+
+### Add permissions
+TODO: Add more specific permissions.
+
+    kubectl create clusterrolebinding ingress-cluster-admin --clusterrole=cluster-admin --serviceaccount=nginx-ingress:default --namespace=nginx-ingress
 
 ### Create default backend
 
