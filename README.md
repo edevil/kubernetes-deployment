@@ -101,6 +101,16 @@ This DaemonSet will ensure that a fluentd daemon will run on every node.
 
     kubectl create -f files/fluentd-ds.yml
 
+## Dashboard
+
+### Add permissions to default namespace account
+
+    kubectl create clusterrolebinding system-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default --namespace=kube-system
+
+### Create deployment and service
+
+    kubectl create -f https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml
+
 ## Nginx Ingress Controller + Kube-Lego
 
 Based on [this](https://github.com/jetstack/kube-lego/tree/master/examples/nginx).
