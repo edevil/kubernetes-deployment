@@ -77,8 +77,6 @@
       service: name=var-lib-docker.mount enabled=yes
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
-    - name: Wait for API to spin up
-      wait_for: port=8080 timeout=360
 
 - name: Initialize Kubernetes nodes
   hosts: node:&{{ resource_group }}
@@ -129,3 +127,10 @@
       service: name=var-lib-docker.mount enabled=yes
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
+
+- name: Wait for API
+  hosts: master:&{{ resource_group }}
+  tags: master
+  tasks:
+    - name: Wait for API to spin up
+      wait_for: port=8080 timeout=360
