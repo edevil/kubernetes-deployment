@@ -61,7 +61,7 @@
         creates: proxy.pem
 
 - name: Generate workers Certs
-  hosts: etcd:node:&{{ resource_group }}
+  hosts: node:&{{ resource_group }}
   connection: local
   tags: workerscerts
   vars:
