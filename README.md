@@ -97,6 +97,17 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
     kubectl create -f https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml
 
+## Heapster
+
+### Create account and add cluster role
+
+    kubectl create serviceaccount heapster --namespace=kube-system
+    kubectl create clusterrolebinding heapster-role --clusterrole=system:heapster --serviceaccount=kube-system:heapster --namespace=heapster
+
+### Create deployment and service
+
+    kubectl create -f files/kube-heapster-svc.yaml
+
 ## Logging
 
 ### Create ConfigMap

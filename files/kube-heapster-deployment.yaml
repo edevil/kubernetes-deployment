@@ -3,6 +3,7 @@ spec:
   replicas: 1
   template:
     spec:
+      serviceAccountName: heapster
       containers:
       - image: gcr.io/google_containers/heapster:v1.2.0
         command:
