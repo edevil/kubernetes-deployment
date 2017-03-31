@@ -87,6 +87,16 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
 # Optional components
 
+## Dashboard
+
+### Add permissions to default namespace account
+
+    kubectl create clusterrolebinding system-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default --namespace=kube-system
+
+### Create deployment and service
+
+    kubectl create -f https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml
+
 ## Logging
 
 ### Create ConfigMap
@@ -100,16 +110,6 @@ The file ```files/td-agent.conf``` contains an example configuration that can be
 This DaemonSet will ensure that a fluentd daemon will run on every node.
 
     kubectl create -f files/fluentd-ds.yml
-
-## Dashboard
-
-### Add permissions to default namespace account
-
-    kubectl create clusterrolebinding system-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default --namespace=kube-system
-
-### Create deployment and service
-
-    kubectl create -f https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml
 
 ## Nginx Ingress Controller + Kube-Lego
 
