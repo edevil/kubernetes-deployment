@@ -106,7 +106,8 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
 ### Create deployment and service
 
-    kubectl create -f files/kube-heapster-svc.yaml
+    kubectl create -f files/kube-heapster-service.yaml
+    kubectl create -f files/kube-heapster-deployment.yaml
 
 ## Logging - Fluentd
 
