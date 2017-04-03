@@ -108,7 +108,7 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
     kubectl create -f files/kube-heapster-svc.yaml
 
-## Logging
+## Logging - Fluentd
 
 ### Create ConfigMap
 
@@ -121,6 +121,16 @@ The file ```files/td-agent.conf``` contains an example configuration that can be
 This DaemonSet will ensure that a fluentd daemon will run on every node.
 
     kubectl create -f files/fluentd-ds.yml
+
+## Logging - OMS
+
+### Configuration
+
+The correct workspace ID ```<WSID>``` and key ```<KEY>``` need to be configured on the daemonset configuration file ```oms-daemonset.yaml```. These values can be obtained from the "Connected Sources" menu of the OMS Portal.
+
+### Creating DaemonSet
+
+    kubectl create -f files/oms-daemonset.yaml --namespace=kube-system
 
 ## Nginx Ingress Controller + Kube-Lego
 
