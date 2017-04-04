@@ -102,7 +102,7 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 ### Create account and add cluster role
 
     kubectl create serviceaccount heapster --namespace=kube-system
-    kubectl create clusterrolebinding heapster-role --clusterrole=system:heapster --serviceaccount=kube-system:heapster --namespace=heapster
+    kubectl create clusterrolebinding heapster-role --clusterrole=system:heapster --serviceaccount=kube-system:heapster --namespace=kube-system
 
 ### Create deployment and service
 
