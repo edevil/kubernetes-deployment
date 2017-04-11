@@ -60,7 +60,7 @@
     - name: Copy kubeconfig
       copy: src=kubeconfig-master dest=/etc/kubernetes/kubeconfig
     - name: Copy sample tokens
-      copy: src=tokens.csv dest=/etc/kubernetes/tokens.csv mode=0600
+      copy: src=tokens.csv dest=/etc/kubernetes/tokens.csv mode=0600 force=no
     - name: Configure Kube-proxy
       template: src=kube-proxy-master.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
     - name: Configure Controller Manager
