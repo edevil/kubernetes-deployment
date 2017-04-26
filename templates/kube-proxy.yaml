@@ -19,6 +19,7 @@ spec:
     - --master=https://{{ master_fqdn }}
     - --kubeconfig=/etc/kubernetes/proxy-kubeconfig.yaml
     - --proxy-mode=iptables
+    - --cluster-cidr={{ pod_network }}
     securityContext:
       privileged: true
     volumeMounts:
