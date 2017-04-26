@@ -3,7 +3,12 @@ kind: Pod
 metadata:
   name: kube-proxy
   namespace: kube-system
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
 spec:
+  tolerations:
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
   hostNetwork: true
   containers:
   - name: kube-proxy
