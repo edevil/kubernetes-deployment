@@ -16,13 +16,13 @@
     - name: Write locksmithd configuration
       template: src=lock-remote.conf dest=/etc/systemd/system/locksmithd.service.d/40-lock-remote.conf
     - name: Create etcd config dir
-      file: path=/etc/systemd/system/etcd2.service.d state=directory
+      file: path=/etc/systemd/system/etcd-member.service.d state=directory
     - name: Configure etcd
-      template: src=etcd-listen-address.conf dest=/etc/systemd/system/etcd2.service.d/40-listen-address.conf
+      template: src=etcd-unit.conf dest=/etc/systemd/system/etcd-member.service.d/20-clct-etcd-member.conf
     - name: Reload systemd daemons
       shell: systemctl daemon-reload
-    - name: Start etcd2
-      service: name=etcd2 state=started enabled=yes
+    - name: Start etcd
+      service: name=etcd-member state=started enabled=yes
     - name: Restart locksmithd
       service: name=locksmithd state=restarted enabled=yes
 

@@ -208,3 +208,10 @@ Run ansible playbooks restricted to that resource.
     ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP bootstrap.yml --limit node-0-vm
     ansible -i azure_rm.py all --limit $RESOURCE_GROUP -m setup
     ansible-playbook -i azure_rm.py -e resource_group=$RESOURCE_GROUP kubernetes_setup.yml --limit node-0-vm
+
+## Upgrading etcd 2 -> 3
+
+Don't forget to copy data dir:
+
+    rm -fr /var/lib/etcd
+    cp -rp /var/lib/etcd2 /var/lib/etcd
