@@ -211,7 +211,17 @@ Run ansible playbooks restricted to that resource.
 
 ## Upgrading etcd 2 -> 3
 
+Stop and disable etcd2:
+
+    systemctl stop etcd2
+    systemctl disable etcd2
+
 Don't forget to copy data dir:
 
     rm -fr /var/lib/etcd
     cp -rp /var/lib/etcd2 /var/lib/etcd
+
+Start and enable etcd3 service:
+
+    systemctl start etcd-member
+    systemctl enable etcd-member
