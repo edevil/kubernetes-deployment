@@ -221,7 +221,21 @@ Don't forget to copy data dir:
     rm -fr /var/lib/etcd
     cp -rp /var/lib/etcd2 /var/lib/etcd
 
-Start and enable etcd3 service:
+Start and enable etcd3 service or run the ansible setup again:
 
     systemctl start etcd-member
     systemctl enable etcd-member
+
+## Migrating data etcd 2 -> 3
+
+1. Stop all API servers
+1. Enter the etcd RKT containers
+1. Stop the etcd-member service
+1. Run the migration script on the data dir (/var/lib/etcd) `ETCDCTL_API=3 /usr/local/bin/etcdctl migrate`
+1. Start the etcd-member service
+1. Alter the storage-backend flag of the API descriptor to "etcd3"
+1. Start all API servers
+
+## Change storage media type to protobuf
+
+After all previous steps have been taken and the cluster is table, alter the API server descriptor to change the `storage-media-type` flag from `application/json` to `application/vnd.kubernetes.protobuf`.
