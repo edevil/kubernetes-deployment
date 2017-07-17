@@ -24,6 +24,7 @@ spec:
     - --cluster-cidr={{ pod_network }}
     - --cluster-name={{ resource_group}}
     - --node-monitor-grace-period=240s
+    - --feature-gates=ExperimentalCriticalPodAnnotation=true
     livenessProbe:
       httpGet:
         host: 127.0.0.1
