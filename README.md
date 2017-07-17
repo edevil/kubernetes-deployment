@@ -238,4 +238,4 @@ Start and enable etcd3 service or run the ansible setup again:
 
 ## Change storage media type to protobuf
 
-After all previous steps have been taken and the cluster is table, alter the API server descriptor to change the `storage-media-type` flag from `application/json` to `application/vnd.kubernetes.protobuf`.
+After all previous steps have been taken and the cluster is stable, alter the API server descriptor to change the `storage-media-type` flag from `application/json` to `application/vnd.kubernetes.protobuf`.
