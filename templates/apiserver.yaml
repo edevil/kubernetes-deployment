@@ -27,7 +27,7 @@ spec:
     - --anonymous-auth=false
     - --authorization-mode=RBAC
     - --enable-swagger-ui=true
-    - --storage-backend=etcd2
+    - --storage-backend=etcd3
     - --storage-media-type=application/json
     - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
     - --etcd-certfile=/etc/kubernetes/ssl/apiserver.pem

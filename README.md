@@ -230,9 +230,9 @@ Start and enable etcd3 service or run the ansible setup again:
 
 1. Stop all API servers
 1. Enter the etcd RKT containers `rkt enter XXX /bin/sh`
-1. Stop the etcd-member service `systemctl etcd-member stop`
+1. Stop the etcd-member service `systemctl stop etcd-member`
 1. Run the migration script on the data dir `cd /var/lib/etcd; ETCDCTL_API=3 /usr/local/bin/etcdctl migrate`
-1. Start the etcd-member service
+1. Start the etcd-member service `systemctl start etcd-member`
 1. Alter the storage-backend flag of the API descriptor `--storage-backend=etcd3`
 1. Start all API servers
 
