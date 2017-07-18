@@ -28,7 +28,7 @@ spec:
     - --authorization-mode=RBAC
     - --enable-swagger-ui=true
     - --storage-backend=etcd3
-    - --storage-media-type=application/json
+    - --storage-media-type=application/vnd.kubernetes.protobuf
     - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
     - --etcd-certfile=/etc/kubernetes/ssl/apiserver.pem
     - --etcd-keyfile=/etc/kubernetes/ssl/apiserver-key.pem
