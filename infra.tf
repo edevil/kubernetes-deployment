@@ -268,7 +268,8 @@ resource "azurerm_virtual_machine" "etcdvm" {
         name = "etcddisk-${count.index}"
         caching = "ReadWrite"
         create_option = "FromImage"
-        managed_disk_type = "Standard_LRS"
+        managed_disk_type = "${var.etcd_storage_type}"
+        disk_size_gb = 32
     }
 
     boot_diagnostics {
@@ -407,7 +408,8 @@ resource "azurerm_virtual_machine" "mastervm" {
         name = "masterdisk-${count.index}"
         caching = "ReadWrite"
         create_option = "FromImage"
-        managed_disk_type = "Standard_LRS"
+        managed_disk_type = "${var.master_storage_type}"
+        disk_size_gb = 32
     }
 
     boot_diagnostics {
@@ -482,7 +484,8 @@ resource "azurerm_virtual_machine" "nodevm" {
         name = "nodedisk-${count.index}"
         caching = "ReadWrite"
         create_option = "FromImage"
-        managed_disk_type = "Standard_LRS"
+        managed_disk_type = "${var.node_storage_type}"
+        disk_size_gb = 32
     }
 
     boot_diagnostics {
