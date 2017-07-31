@@ -11,16 +11,26 @@ spec:
     command:
     - /hyperkube
     - proxy
-    - --master=http://127.0.0.1:8080
-    - --proxy-mode=iptables
-    - --cluster-cidr={{ pod_network }}
+    - --config=/etc/kubernetes/proxy.conf
     securityContext:
       privileged: true
     volumeMounts:
     - mountPath: /etc/ssl/certs
       name: ssl-certs-host
       readOnly: true
+    - mountPath: /etc/kubernetes/proxy-kubeconfig.yaml
+      name: "kubeconfig"
+      readOnly: true
+    - mountPath: /etc/kubernetes/proxy.conf
+      name: "config"
+      readOnly: true
   volumes:
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host
+  - name: "kubeconfig"
+    hostPath:
+      path: "/etc/kubernetes/kubeconfig"
+  - name: "config"
+    hostPath:
+      path: "/etc/kubernetes/proxy.conf"

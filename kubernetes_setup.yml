@@ -61,6 +61,8 @@
       copy: src=kubeconfig-master dest=/etc/kubernetes/kubeconfig
     - name: Copy sample tokens
       copy: src=tokens.csv dest=/etc/kubernetes/tokens.csv mode=0600 force=no
+    - name: Copy proxy config
+      template: src=kube-proxy.conf dest=/etc/kubernetes/proxy.conf
     - name: Configure Kube-proxy
       template: src=kube-proxy-master.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
     - name: Configure Controller Manager
@@ -115,6 +117,8 @@
       template: src=worker-kubeconfig.yaml dest=/etc/kubernetes/worker-kubeconfig.yaml
     - name: Setup proxy kubeconfig
       template: src=proxy-kubeconfig.yaml dest=/etc/kubernetes/proxy-kubeconfig.yaml
+    - name: Copy proxy config
+      template: src=kube-proxy.conf dest=/etc/kubernetes/proxy.conf
     - name: Configure Kube-proxy
       template: src=kube-proxy.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
     - name: Reload systemd daemons
