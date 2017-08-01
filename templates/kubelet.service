@@ -17,7 +17,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
   --require-kubeconfig \
   --container-runtime=docker \
-  --network-plugin-dir=/etc/kubernetes/cni/net.d \
+  --cni-bin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \
   --register-node=true \
   --allow-privileged=true \

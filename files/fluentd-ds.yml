@@ -11,6 +11,10 @@ spec:
       labels:
         name: fluentd
     spec:
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
       - name: fluentd-logz
         image: edevil/fluentd-kubernetes:20160810-1
