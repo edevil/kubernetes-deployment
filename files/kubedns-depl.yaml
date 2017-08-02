@@ -46,11 +46,9 @@ spec:
           - weight: 100
             podAffinityTerm:
               labelSelector:
-                matchExpressions:
-                - key: k8s-app
-                  operator: In
-                  values:
-                  - kube-dns
+                matchLabels:
+                  k8s-app: kube-dns
+                  version: v21
               topologyKey: kubernetes.io/hostname
       tolerations:
       - key: "CriticalAddonsOnly"
