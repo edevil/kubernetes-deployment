@@ -4,3 +4,5 @@ terraform.tfstate.backup
 certs/
 .DS_Store
 .#*
+.terraform
+*.retry
