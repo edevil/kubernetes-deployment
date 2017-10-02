@@ -15,7 +15,6 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cloud-provider=azure \
   --cloud-config=/etc/kubernetes/azure.json \
   --kubeconfig=/etc/kubernetes/kubeconfig \
-  --require-kubeconfig \
   --container-runtime=docker \
   --cni-bin-dir=/etc/kubernetes/cni/net.d \
   --network-plugin={{ network_plugin }} \
