@@ -10,7 +10,7 @@ spec:
     resources:
       requests:
         cpu: 100m
-    image: quay.io/coreos/hyperkube:{{ k8s_ver }}
+    image: gcr.io/google_containers/hyperkube:{{ k8s_ver_bare }}
     command:
     - /hyperkube
     - scheduler

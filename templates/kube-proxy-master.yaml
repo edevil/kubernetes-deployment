@@ -7,7 +7,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-proxy
-    image: quay.io/coreos/hyperkube:{{ k8s_ver }}
+    image: gcr.io/google_containers/hyperkube:{{ k8s_ver_bare }}
     command:
     - /hyperkube
     - proxy
