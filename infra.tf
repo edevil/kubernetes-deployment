@@ -152,7 +152,8 @@ resource "azurerm_storage_account" "util_disks_account" {
   name = "${lower(var.resource_group)}utildisk"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
   location = "${var.region}"
-  account_type = "Standard_LRS"
+  account_tier = "Standard"
+  account_replication_type = "LRS"
 }
 
 resource "azurerm_storage_container" "util_disks_container" {
