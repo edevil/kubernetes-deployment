@@ -25,7 +25,7 @@ spec:
     - --advertise-address={{ ansible_default_ipv4.address }}
     - --admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,DefaultStorageClass,ResourceQuota
     - --anonymous-auth=false
-    - --authorization-mode=RBAC
+    - --authorization-mode=RBAC,Node
     - --enable-swagger-ui=true
     - --storage-backend=etcd3
     - --storage-media-type=application/vnd.kubernetes.protobuf

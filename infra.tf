@@ -87,6 +87,7 @@ provider "azurerm" {
     client_id = "${var.client_id}"
     client_secret = "${var.client_secret}"
     tenant_id = "${var.tenant_id}"
+    version = "0.3.1"
 }
 
 # Create a resource group
@@ -410,7 +411,7 @@ resource "azurerm_virtual_machine" "mastervm" {
         caching = "ReadWrite"
         create_option = "FromImage"
         managed_disk_type = "${var.master_storage_type}"
-        disk_size_gb = 32
+        disk_size_gb = 40
     }
 
     boot_diagnostics {
@@ -486,7 +487,7 @@ resource "azurerm_virtual_machine" "nodevm" {
         caching = "ReadWrite"
         create_option = "FromImage"
         managed_disk_type = "${var.node_storage_type}"
-        disk_size_gb = 32
+        disk_size_gb = 100
     }
 
     boot_diagnostics {
