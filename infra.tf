@@ -108,6 +108,10 @@ resource "azurerm_route_table" "kubetable" {
   name = "kube-route-table"
   location = "${var.region}"
   resource_group_name = "${azurerm_resource_group.kuberg.name}"
+
+  lifecycle {
+      ignore_changes = "route"
+  }
 }
 
 resource "azurerm_network_security_group" "kubesg" {
