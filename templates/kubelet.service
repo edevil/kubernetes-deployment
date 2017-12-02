@@ -8,7 +8,7 @@ ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
 
-Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid --volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules --volume etc-resolv,kind=host,source=/etc/resolv.conf --mount volume=etc-resolv,target=/etc/resolv.conf"
+Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid --volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume etc-cni,kind=host,source=/etc/cni/net.d --mount volume=etc-cni,target=/etc/cni/net.d --volume bin-cni,kind=host,source=/opt/cni/bin --mount volume=bin-cni,target=/opt/cni/bin --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules --volume etc-resolv,kind=host,source=/etc/resolv.conf --mount volume=etc-resolv,target=/etc/resolv.conf"
 Environment=KUBELET_IMAGE_TAG={{ k8s_ver }}
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --feature-gates=ExperimentalCriticalPodAnnotation=true \
@@ -16,7 +16,8 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cloud-config=/etc/kubernetes/azure.json \
   --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
   --container-runtime=docker \
-  --cni-bin-dir=/etc/kubernetes/cni/net.d \
+  --cni-conf-dir=/etc/cni/net.d \
+  --cni-bin-dir=/opt/cni/bin \
   --network-plugin={{ network_plugin }} \
   --register-node=true \
   --allow-privileged=true \

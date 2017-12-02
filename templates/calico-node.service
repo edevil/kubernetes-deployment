@@ -1,0 +1,38 @@
+[Unit]
+Description=calico node
+After=docker.service
+Requires=docker.service
+
+[Service]
+User=root
+PermissionsStartOnly=true
+ExecStart=/usr/bin/docker run --net=host --privileged --name=calico-node \
+  -e ETCD_ENDPOINTS={% set comma = joiner(",") %}{% for host in groups['etcd'] %}{{ comma() }}https://{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:2379{% endfor %} \
+  -e ETCD_KEY_FILE=/etc/kubernetes/ssl/worker-key.pem \
+  -e ETCD_CERT_FILE=/etc/kubernetes/ssl/worker.pem \
+  -e ETCD_CA_CERT_FILE=/etc/kubernetes/ssl/ca.pem \
+  -e K8S_API_ENDPOINT=https://{{ master_fqdn }} \
+  -e K8S_CERT_FILE=/etc/kubernetes/ssl/worker.pem \
+  -e K8S_KEY_FILE=/etc/kubernetes/ssl/worker-key.pem \
+  -e K8S_CA_FILE=/etc/kubernetes/ssl/ca.pem \
+  -e CALICO_STARTUP_LOGLEVEL=debug \
+  -e NODENAME={{ ansible_hostname }} \
+  -e IP= \
+  -e NO_DEFAULT_POOLS= \
+  -e AS= \
+  -e CALICO_LIBNETWORK_ENABLED=true \
+  -e IP6= \
+  -e CALICO_NETWORKING_BACKEND=bird \
+  -e FELIX_DEFAULTENDPOINTTOHOSTACTION=ACCEPT \
+  -v /var/run/calico:/var/run/calico \
+  -v /lib/modules:/lib/modules \
+  -v /run/docker/plugins:/run/docker/plugins \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /var/log/calico:/var/log/calico \
+  quay.io/calico/node:v2.6.3
+ExecStop=/usr/bin/docker rm -f calico-node
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

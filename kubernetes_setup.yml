@@ -49,6 +49,8 @@
       copy: src=50-docker-opts.conf dest=/etc/systemd/system/docker.service.d/50-docker-opts.conf mode=0644
     - name: Create Kubelet unit
       template: src=kubelet-master.service dest=/etc/systemd/system/kubelet.service
+    - name: Create Calico node unit
+      template: src=calico-node.service dest=/etc/systemd/system/calico-node.service
     - name: Create manifest dir
       file: path=/etc/kubernetes/manifests state=directory
     - name: Configure API server
@@ -65,12 +67,36 @@
       template: src=controller-manager.yaml dest=/etc/kubernetes/manifests/kube-controller-manager.yaml
     - name: Configure Scheduler
       template: src=scheduler.yaml dest=/etc/kubernetes/manifests/kube-scheduler.yaml
+    - name: Fetch CNI Calico
+      get_url:
+        url: https://github.com/projectcalico/cni-plugin/releases/download/v1.11.1/calico
+        dest: /opt/cni/bin/calico
+        mode: 0755
+    - name: Fetch CNI Calico IPAM
+      get_url:
+        url: https://github.com/projectcalico/cni-plugin/releases/download/v1.11.1/calico-ipam
+        dest: /opt/cni/bin/calico-ipam
+        mode: 0755
+    - name: Fetch and unarchive CNI bundle
+      unarchive:
+        src: https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz
+        dest: /tmp
+        remote_src: yes
+    - name: Copy loopback binary
+      copy:
+        src: /tmp/loopback
+        dest: /opt/cni/bin/loopback
+        remote_src: yes
+    - name: Copy CNI config
+      template: src=10-calico.conf dest=/etc/cni/net.d/10-calico.conf
     - name: Reload systemd daemons
       shell: systemctl daemon-reload
     - name: Restart locksmithd
       service: name=locksmithd state=restarted enabled=yes
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
+    - name: Start Calico node
+      service: name=calico-node state=started enabled=yes
 
 - name: Initialize Kubernetes nodes
   hosts: node:&{{ resource_group }}
