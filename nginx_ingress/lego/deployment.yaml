@@ -10,6 +10,7 @@ spec:
       labels:
         app: kube-lego
     spec:
+      serviceAccountName: kube-lego-serviceaccount
       containers:
       - name: kube-lego
         image: jetstack/kube-lego:0.1.3
