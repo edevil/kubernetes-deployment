@@ -10,6 +10,7 @@ spec:
       labels:
         app: nginx
     spec:
+      serviceAccountName: nginx-ingress-serviceaccount
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
