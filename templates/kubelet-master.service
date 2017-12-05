@@ -8,8 +8,9 @@ ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
 
-Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid --volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules --volume etc-resolv,kind=host,source=/etc/resolv.conf --mount volume=etc-resolv,target=/etc/resolv.conf"
-Environment=KUBELET_IMAGE_TAG={{ k8s_ver }}
+Environment="RKT_RUN_ARGS=--insecure-options=image --uuid-file-save=/var/run/kubelet-pod.uuid --volume var-cni,kind=host,source=/var/lib/cni --mount volume=var-cni,target=/var/lib/cni --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules --volume etc-resolv,kind=host,source=/etc/resolv.conf --mount volume=etc-resolv,target=/etc/resolv.conf"
+Environment=KUBELET_IMAGE_TAG={{ k8s_ver_bare }}
+Environment=KUBELET_IMAGE_URL=docker://gcr.io/google_containers/hyperkube
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --feature-gates=ExperimentalCriticalPodAnnotation=true \
   --cloud-provider=azure \
