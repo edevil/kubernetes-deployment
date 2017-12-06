@@ -60,6 +60,25 @@
         chdir: certs/
         creates: proxy.pem
 
+- name: Generate k8s secret encryption key
+  hosts: localhost
+  connection: local
+  tags: k8scert
+  tasks:
+    - name: Check for already generated k8s key
+      stat:
+        path: certs/enc-config-{{ resource_group }}.yaml
+      register: k8sfile
+
+    - name: Generate k8s secret
+      shell: head -c 32 /dev/urandom | base64
+      register: k8sSecretKey
+      when: not k8sfile.stat.exists
+
+    - name: Generate encryption config
+      template: src=enc-config.yaml dest=certs/enc-config-{{ resource_group }}.yaml
+      when: not k8sfile.stat.exists
+
 - name: Generate workers Certs
   hosts: node:&{{ resource_group }}
   connection: local
