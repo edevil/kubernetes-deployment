@@ -10,6 +10,7 @@ spec:
       labels:
         app: default-http-backend
     spec:
+      serviceAccountName: nginx-ingress-serviceaccount
       containers:
       - name: default-http-backend
         # Any image is permissable as long as:
