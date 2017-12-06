@@ -39,6 +39,8 @@
       copy: src=certs/apiserver.pem dest=/etc/kubernetes/ssl/apiserver.pem mode=0644
     - name: Copy API private key
       copy: src=certs/apiserver-key.pem dest=/etc/kubernetes/ssl/apiserver-key.pem mode=0600
+    - name: Copy k8s secret
+      copy: src=certs/enc-config-{{ resource_group }}.yaml dest=/etc/kubernetes/enc-config.yaml mode=0600
     - name: Create locksmithd systemd dropin dir
       file: path=/etc/systemd/system/locksmithd.service.d state=directory
     - name: Write locksmithd configuration
