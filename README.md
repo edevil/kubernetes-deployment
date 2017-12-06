@@ -72,6 +72,16 @@ In order to manage the Kubernetes cluster you need to configure the `kubectl` co
     kubectl config set-context $RESOURCE_GROUP-system --cluster=$RESOURCE_GROUP-cluster --user=$RESOURCE_GROUP-admin
     kubectl config use-context $RESOURCE_GROUP-system
 
+## Install the Calico CNI plugin
+
+The kubelet was configured to use a CNI plugin, but there isn't one installed yet. We need to install the Calico CNI plugin, relevant RBAC config and Calico components.
+
+    # create RBAC definitions
+    kubectl create -f files/calico-rbac.yaml
+
+    # create Calico components
+    kubectl create -f files/calico.yaml
+
 ## Install the DNS addon
 
 The kubelet was configured to use a DNS service running on Kubernetes, so we need to provision the Kubernetes DNS addon. This helps in the discovery of services running in the Kubernetes cluster.
