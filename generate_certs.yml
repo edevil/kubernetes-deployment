@@ -29,7 +29,7 @@
         chdir: certs/
         creates: apiserver-key.pem
     - name: Generate apiserver CSR
-      shell: openssl req -new -key apiserver-key.pem -out apiserver.csr -subj "/CN=kube-apiserver" -config openssl.cnf
+      shell: openssl req -new -key apiserver-key.pem -out apiserver.csr -subj "/CN=kube-apiserver-{{ resource_group }}" -config openssl.cnf
       args:
         chdir: certs/
         creates: apiserver.csr
@@ -78,6 +78,41 @@
     - name: Generate encryption config
       template: src=enc-config.yaml dest=certs/enc-config-{{ resource_group }}.yaml
       when: not k8sfile.stat.exists
+
+- name: Generate etcd root key
+  hosts: localhost
+  connection: local
+  tags: etcdroot
+  tasks:
+    - name: Check for already generated root key
+      stat:
+        path: certs/etcd_root.key
+      register: etcdroot
+
+    - name: Writing key
+      shell: head -c 32 /dev/urandom | base64 > certs/etcd_root.key
+      when: not etcdroot.stat.exists
+
+- name: Generate root etcd cert
+  hosts: localhost
+  connection: local
+  tags: etcdroot
+  tasks:
+    - name: Generate etcd root primary key
+      shell: openssl genrsa -out etcd-root-key.pem 2048
+      args:
+        chdir: certs/
+        creates: etcd-root-key.pem
+    - name: Generate etcd root CSR
+      shell: openssl req -new -key etcd-root-key.pem -out etcd-root.csr -subj "/CN=root" -config ../files/proxy-openssl.cnf
+      args:
+        chdir: certs/
+        creates: etcd-root.csr
+    - name: Generate etcd root certificate
+      shell: openssl x509 -req -in etcd-root.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out etcd-root.pem -days 720 -extensions v3_req -extfile ../files/proxy-openssl.cnf
+      args:
+        chdir: certs/
+        creates: etcd-root.pem
 
 - name: Generate workers Certs
   hosts: node:&{{ resource_group }}

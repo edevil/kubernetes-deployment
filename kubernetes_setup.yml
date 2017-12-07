@@ -1,3 +1,42 @@
+- name: Choose random etcd host
+  hosts: localhost
+  connection: local
+  tags: ectdauth
+  tasks:
+  - add_host:
+      name: "{{ item }}"
+      groups: elected_etcd
+    with_random_choice: "{{ (groups['etcd'] | intersect(groups[resource_group])) | random }}"
+
+- name: Configure etcd authentication and ACLs
+  hosts: elected_etcd
+  become: yes
+  tags: ectdauth
+  tasks:
+    - debug: var=inventory_hostname
+    - name: Copy etcd root certificate
+      copy: src=certs/etcd-root.pem dest=/root/etcd-root.pem mode=0640
+    - name: Copy etcd root certificate key
+      copy: src=certs/etcd-root-key.pem dest=/root/etcd-root-key.pem mode=0640
+    - set_fact:
+        etcd_root_key: "{{ lookup('file', 'certs/etcd_root.key') }}"
+    - name: Check if API user already exists
+      shell: ETCDCTL_API=3 etcdctl --endpoints https://{{ ansible_hostname }}:2379 --cacert /etc/kubernetes/ssl/ca.pem --cert /root/etcd-root.pem --key /root/etcd-root-key.pem user get kube-apiserver-{{ resource_group }}
+      register: existing_user
+      ignore_errors: True
+    - meta: end_play
+      when: existing_user.rc == 0
+    - name: Create root user
+      shell: echo {{ etcd_root_key }} | ETCDCTL_API=3 etcdctl --endpoints https://{{ ansible_hostname }}:2379 --cacert /etc/kubernetes/ssl/ca.pem --cert /root/etcd-root.pem --key /root/etcd-root-key.pem user add root --interactive=false
+      when: existing_user.rc == 1
+    - name: Enable etcd authentication
+      shell: ETCDCTL_API=3 etcdctl --endpoints https://{{ ansible_hostname }}:2379 --cacert /etc/kubernetes/ssl/ca.pem --cert /root/etcd-root.pem --key /root/etcd-root-key.pem auth enable
+      when: existing_user.rc == 1
+    - name: Create cluster user
+      shell: echo {{ etcd_root_key }} | ETCDCTL_API=3 etcdctl --endpoints https://{{ ansible_hostname }}:2379 --cacert /etc/kubernetes/ssl/ca.pem --cert /root/etcd-root.pem --key /root/etcd-root-key.pem user add kube-apiserver-{{ resource_group }} --interactive=false
+# TODO: enforce ACL
+
+
 - name: Initialize etcd nodes
   hosts: etcd:&{{ resource_group }}
   become: yes
