@@ -29,7 +29,7 @@
         chdir: certs/
         creates: apiserver-key.pem
     - name: Generate apiserver CSR
-      shell: openssl req -new -key apiserver-key.pem -out apiserver.csr -subj "/CN=kube-apiserver" -config openssl.cnf
+      shell: openssl req -new -key apiserver-key.pem -out apiserver.csr -subj "/CN=kube-apiserver-{{ resource_group }}" -config openssl.cnf
       args:
         chdir: certs/
         creates: apiserver.csr
