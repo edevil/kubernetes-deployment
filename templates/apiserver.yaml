@@ -41,6 +41,7 @@ spec:
     - --kubelet-client-certificate=/etc/kubernetes/ssl/apiserver.pem
     - --kubelet-client-key=/etc/kubernetes/ssl/apiserver-key.pem
     - --experimental-encryption-provider-config=/etc/kubernetes/enc-config.yaml
+    - --etcd-prefix={{ k8s_etcd_prefix }}
     ports:
     - containerPort: 443
       hostPort: 443

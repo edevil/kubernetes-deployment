@@ -25,6 +25,8 @@
       service: name=etcd-member state=started enabled=yes
     - name: Restart locksmithd
       service: name=locksmithd state=restarted enabled=yes
+    - name: Wait for etcd to spin up
+      wait_for: port=2379 timeout=60
 
 - name: Initialize Kubernetes master
   hosts: master:&{{ resource_group }}

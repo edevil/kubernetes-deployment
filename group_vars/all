@@ -1,5 +1,5 @@
 ansible_ssh_user: brpxuser
-k8s_ver_bare: v1.8.4
+k8s_ver_bare: v1.8.5
 network_plugin: "cni"
 region: westeurope
 master_fqdn: "{{ resource_group}}-master.{{ region }}.cloudapp.azure.com"
@@ -7,3 +7,4 @@ service_ip_range: 10.3.0.0/24
 pod_network: 10.2.0.0/16
 dns_service_ip: 10.3.0.10
 api_service_ip: 10.3.0.1
+k8s_etcd_prefix: "/registry"
