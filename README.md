@@ -78,6 +78,8 @@ Configure the default storage class when one is not specified in the descriptor:
 
     kubectl apply -f files/default-storage-class.yaml
 
+Usage examples can be found [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_disk/claim).
+
 ## Install the DNS addon
 
 The kubelet was configured to use a DNS service running on Kubernetes, so we need to provision the Kubernetes DNS addon. This helps in the discovery of services running in the Kubernetes cluster.
