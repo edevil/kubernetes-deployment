@@ -78,7 +78,7 @@ Configure the default storage class when one is not specified in the descriptor:
 
     kubectl apply -f files/default-storage-class.yaml
 
-Usage examples can be found [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_disk/claim).
+Usage examples can be found [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_disk/claim). Azure-file is fine for when only one pod is using the volume, when you need multiple pods using the same volume and/or multiple writers you need to use azure-file and examples can be found [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_file).
 
 ## Install the DNS addon
 
