@@ -72,6 +72,12 @@ In order to manage the Kubernetes cluster you need to configure the `kubectl` co
     kubectl config set-context $RESOURCE_GROUP-system --cluster=$RESOURCE_GROUP-cluster --user=$RESOURCE_GROUP-admin
     kubectl config use-context $RESOURCE_GROUP-system
 
+## Configure storage class
+
+Configure the default storage class when one is not specified in the descriptor:
+
+    kubectl apply -f files/default-storage-class.yaml
+
 ## Install the DNS addon
 
 The kubelet was configured to use a DNS service running on Kubernetes, so we need to provision the Kubernetes DNS addon. This helps in the discovery of services running in the Kubernetes cluster.
