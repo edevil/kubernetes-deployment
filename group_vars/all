@@ -1,5 +1,5 @@
 ansible_ssh_user: brpxuser
-k8s_ver_bare: v1.9.0
+k8s_ver_bare: v1.8.5
 network_plugin: "kubenet"
 region: westeurope
 master_fqdn: "{{ resource_group}}-master.{{ region }}.cloudapp.azure.com"
