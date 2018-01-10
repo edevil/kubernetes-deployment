@@ -72,7 +72,6 @@ In order to manage the Kubernetes cluster you need to configure the `kubectl` co
     kubectl config set-context $RESOURCE_GROUP-system --cluster=$RESOURCE_GROUP-cluster --user=$RESOURCE_GROUP-admin
     kubectl config use-context $RESOURCE_GROUP-system
 
-<<<<<<< HEAD
 ## Install the Calico CNI plugin
 
 The kubelet was configured to use a CNI plugin, but there isn't one installed yet. We need to install the Calico CNI plugin, relevant RBAC config and Calico components.
@@ -82,7 +81,6 @@ The kubelet was configured to use a CNI plugin, but there isn't one installed ye
 
     # create Calico components
     kubectl create -f files/calico.yaml
-=======
 ## Configure storage class
 
 Configure the default storage class when one is not specified in the descriptor:
@@ -90,7 +88,6 @@ Configure the default storage class when one is not specified in the descriptor:
     kubectl apply -f files/default-storage-class.yaml
 
 Usage examples can be found [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_disk/claim). Azure-file is fine for when only one pod is using the volume, when you need multiple pods using the same volume and/or multiple writers you need to use azure-file and examples can be found [here](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_file).
->>>>>>> stable
 
 ## Install the DNS addon
 
