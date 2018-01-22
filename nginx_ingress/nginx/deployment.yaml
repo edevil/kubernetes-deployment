@@ -9,6 +9,9 @@ spec:
     metadata:
       labels:
         app: nginx
+      annotations:
+        prometheus.io/port: '10254'
+        prometheus.io/scrape: 'true'
     spec:
       serviceAccountName: nginx-ingress-serviceaccount
       affinity:
@@ -21,7 +24,7 @@ spec:
                   app: nginx
               topologyKey: kubernetes.io/hostname
       containers:
-      - image: gcr.io/google_containers/nginx-ingress-controller:0.8.3
+      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.10.0
         name: nginx
         imagePullPolicy: Always
         env:
@@ -34,16 +37,34 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
         livenessProbe:
+          failureThreshold: 3
           httpGet:
             path: /healthz
             port: 10254
             scheme: HTTP
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
         args:
-        - /nginx-ingress-controller
-        - --default-backend-service=nginx-ingress/default-http-backend
-        - --nginx-configmap=nginx-ingress/nginx
+         - /nginx-ingress-controller
+         - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
+         - --configmap=$(POD_NAMESPACE)/nginx
+         - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+         - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+         - --annotations-prefix=ingress.kubernetes.io
+         - --publish-service=$(POD_NAMESPACE)/nginx
