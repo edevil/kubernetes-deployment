@@ -3,9 +3,8 @@ kind: Service
 metadata:
   name: nginx
   namespace: nginx-ingress
-  annotations:
-    service.beta.kubernetes.io/external-traffic: OnlyLocal
 spec:
+  externalTrafficPolicy: Local
   type: LoadBalancer
   ports:
   - port: 80

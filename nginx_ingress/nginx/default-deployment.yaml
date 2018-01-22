@@ -10,6 +10,7 @@ spec:
       labels:
         app: default-http-backend
     spec:
+      terminationGracePeriodSeconds: 60
       serviceAccountName: nginx-ingress-serviceaccount
       containers:
       - name: default-http-backend
