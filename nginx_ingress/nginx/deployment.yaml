@@ -24,7 +24,7 @@ spec:
                   app: nginx
               topologyKey: kubernetes.io/hostname
       containers:
-      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.10.0
+      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.10.2
         name: nginx
         imagePullPolicy: Always
         env:
