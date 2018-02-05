@@ -153,7 +153,7 @@ The correct workspace ID ```<WSID>``` and key ```<KEY>``` need to be configured 
 ## Nginx Ingress Controller + Kube-Lego
 
 Based on [this](https://github.com/jetstack/kube-lego/tree/master/examples/nginx).
-Nginx rbac permissions based on [this](https://github.com/kubernetes/ingress-nginx/blob/master/deploy/rbac.md) and lego permissions based on [this](https://github.com/jetstack/kube-lego/issues/99#issuecomment-332511920).
+Nginx rbac permissions based on [this](https://github.com/kubernetes/ingress-nginx/blob/master/deploy/rbac.md) and lego permissions based on [this](https://github.com/jetstack/kube-lego/blob/master/examples/gce/lego/cluster-role.yaml).
 
 ### Create namespaces
 
