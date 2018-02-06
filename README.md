@@ -256,3 +256,11 @@ Start and enable etcd3 service or run the ansible setup again:
 ## Change storage media type to protobuf
 
 After all previous steps have been taken and the cluster is stable, alter the API server descriptor to change the `storage-media-type` flag from `application/json` to `application/vnd.kubernetes.protobuf`.
+
+# Next steps
+
+- [ ] centralized logging
+- [ ] allow applications to use the horizontal pod autoscaler with default metrics
+- [ ] allow applications to use the horizontal pod autoscaler with custom metrics (ex. requests per second)
+- [ ] setup node autoscaling
+- [ ] package management - [helm](https://helm.sh)
