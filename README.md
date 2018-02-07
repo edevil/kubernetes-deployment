@@ -259,7 +259,7 @@ After all previous steps have been taken and the cluster is stable, alter the AP
 
 # Next steps
 
-- [ ] centralized logging
+- [ ] centralized monitoring, logging and analytics through [datadog](https://www.datadoghq.com)
 - [ ] allow applications to use the horizontal pod autoscaler with default metrics
 - [ ] allow applications to use the horizontal pod autoscaler with custom metrics (ex. requests per second)
 - [ ] setup node autoscaling
