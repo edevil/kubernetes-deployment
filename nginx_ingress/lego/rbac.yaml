@@ -12,21 +12,38 @@ metadata:
   name: kube-lego-clusterrole
 rules:
 - apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  verbs:
+  - create
+  - get
+  - delete
+  - update
+- apiGroups:
   - extensions
   resources:
   - ingresses
   verbs:
-  - list
   - get
-  - create
   - update
+  - create
+  - list
+  - patch
   - delete
   - watch
 - apiGroups:
   - ""
   resources:
   - endpoints
-  - services
   - secrets
   verbs:
   - get
