@@ -7,22 +7,19 @@ spec:
   metadata:
    labels:
     app: omsagent
-    agentVersion: 1.4.1-45
-    dockerProviderVersion: 10.0.0-22
+    agentVersion: 1.4.3-174
+    dockerProviderVersion: 1.0.0-30
   spec:
+   nodeSelector:
+    beta.kubernetes.io/os: linux
    tolerations:
    - key: "node-role.kubernetes.io/master"
      operator: "Exists"
      effect: "NoSchedule"
    containers:
      - name: omsagent
-       image: "microsoft/oms:1.4.1-45"
+       image: "microsoft/oms:1.4.3-174"
        imagePullPolicy: Always
-       env:
-       - name: WSID
-         value: <WSID>
-       - name: KEY
-         value: <KEY>
        securityContext:
          privileged: true
        ports:
@@ -33,17 +30,31 @@ spec:
        volumeMounts:
         - mountPath: /var/run/docker.sock
           name: docker-sock
-        - mountPath: /var/opt/microsoft/omsagent/state/containerhostname
-          name: container-hostname
         - mountPath: /var/log
           name: host-log
+        - mountPath: /etc/omsagent-secret
+          name: omsagent-secret
+          readOnly: true
+        - mountPath: /var/lib/docker/containers
+          name: containerlog-path
+       livenessProbe:
+        exec:
+         command:
+         - /bin/bash
+         - -c
+         - ps -ef | grep omsagent | grep -v "grep"
+        initialDelaySeconds: 60
+        periodSeconds: 60
    volumes:
     - name: docker-sock
       hostPath:
        path: /var/run/docker.sock
-    - name: container-hostname
-      hostPath:
-       path: /etc/hostname
     - name: host-log
       hostPath:
        path: /var/log
+    - name: omsagent-secret
+      secret:
+       secretName: omsagent-secret
+    - name: containerlog-path
+      hostPath:
+       path: /var/lib/docker/containers

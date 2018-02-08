@@ -144,10 +144,11 @@ This DaemonSet will ensure that a fluentd daemon will run on every node.
 
 ### Configuration
 
-The correct workspace ID ```<WSID>``` and key ```<KEY>``` need to be configured on the daemonset configuration file ```oms-daemonset.yaml```. These values can be obtained from the "Connected Sources" menu of the OMS Portal.
+The correct workspace ID ```<WSID>``` and key ```<KEY>``` need to be configured on the secret configuration file ```oms-secret.yaml```. These values can be obtained from the "Connected Sources" menu of the OMS Portal.
 
-### Creating DaemonSet
+### Creating Secret and DaemonSet
 
+    kubectl create -f files/oms-secret.yaml --namespace=kube-system
     kubectl create -f files/oms-daemonset.yaml --namespace=kube-system
 
 ## Nginx Ingress Controller + Kube-Lego
