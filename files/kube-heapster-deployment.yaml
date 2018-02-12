@@ -5,7 +5,7 @@ spec:
     spec:
       # serviceAccountName: heapster - heapster-nanny does not have enough permissions
       containers:
-      - image: gcr.io/google_containers/heapster:v1.4.2
+      - image: gcr.io/google_containers/heapster:v1.5.1
         command:
         - "/heapster"
         - "--source=kubernetes.summary_api:\"\""

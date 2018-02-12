@@ -112,7 +112,7 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
 ### Create deployment and service
 
-    kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.6.3/src/deploy/kubernetes-dashboard.yaml
+    kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.8.2/src/deploy/recommended/kubernetes-dashboard.yaml
 
 ## Heapster
 
