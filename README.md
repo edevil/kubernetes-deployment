@@ -104,11 +104,13 @@ The kubelet was configured to use a DNS service running on Kubernetes, so we nee
 
 # Optional components
 
-## Dashboard
-
 ### Add permissions to default namespace account
 
+At the moment we setup the default service account for the kube-system namespace with cluster admin privileges while specific ACLs are not provided for all components.
+
     kubectl create clusterrolebinding system-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default --namespace=kube-system
+
+## Dashboard
 
 ### Create deployment and service
 
