@@ -24,7 +24,13 @@ spec:
     - mountPath: /etc/kubernetes/proxy.conf
       name: "config"
       readOnly: true
+    - mountPath: /lib/modules
+      name: lib-modules
+      readOnly: true
   volumes:
+  - name: lib-modules
+    hostPath:
+      path: /lib/modules
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host
