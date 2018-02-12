@@ -31,7 +31,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --anonymous-auth=false \
   --image-gc-high-threshold=85 \
   --image-gc-low-threshold=75 \
-  --node-labels=component_type=master,node-role.kubernetes.io/master=""
+  --node-labels=component_type=master,node-role.kubernetes.io/master="true"
 ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
 RestartSec=10

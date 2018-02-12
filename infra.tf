@@ -394,7 +394,7 @@ resource "azurerm_network_interface" "masterNIC" {
 }
 
 resource "azurerm_virtual_machine" "mastervm" {
-    name = "master-${count.index}-vm"
+    name = "k8s-master-${count.index}"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_interface_ids = ["${element(azurerm_network_interface.masterNIC.*.id, count.index)}"]
@@ -424,7 +424,7 @@ resource "azurerm_virtual_machine" "mastervm" {
     }
 
     os_profile {
-        computer_name = "master-${count.index}-vm"
+        computer_name = "k8s-master-${count.index}"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
         custom_data = "${base64encode(data.template_file.kubecloudconfig.rendered)}"
@@ -470,7 +470,7 @@ resource "azurerm_network_interface" "nodeNIC" {
 }
 
 resource "azurerm_virtual_machine" "nodevm" {
-    name = "node-${count.index}-vm"
+    name = "k8s-agent-${count.index}"
     location = "${var.region}"
     resource_group_name = "${azurerm_resource_group.kuberg.name}"
     network_interface_ids = ["${element(azurerm_network_interface.nodeNIC.*.id, count.index)}"]
@@ -500,7 +500,7 @@ resource "azurerm_virtual_machine" "nodevm" {
     }
 
     os_profile {
-        computer_name = "node-${count.index}-vm"
+        computer_name = "k8s-agent-${count.index}"
         admin_username = "${var.username}"
         admin_password = "Password1234!"
         custom_data = "${base64encode(data.template_file.kubecloudconfig.rendered)}"

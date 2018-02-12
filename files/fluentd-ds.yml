@@ -17,7 +17,7 @@ spec:
         effect: "NoSchedule"
       containers:
       - name: fluentd-logz
-        image: edevil/fluentd-kubernetes:20160810-1
+        image: edevil/fluentd-kubernetes:20180212-1
         resources:
           limits:
             memory: 200Mi

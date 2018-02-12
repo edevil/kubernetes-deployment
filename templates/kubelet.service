@@ -36,7 +36,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --eviction-soft="memory.available<300Mi,nodefs.available<14%,nodefs.inodesFree<14%,imagefs.available<14%,imagefs.inodesFree<14%" \
   --eviction-soft-grace-period="memory.available=1m30s,nodefs.available=1m30s,imagefs.available=1m30s,nodefs.inodesFree=1m,imagefs.inodesFree=1m" \
   --eviction-hard="memory.available<250Mi,nodefs.available<10%,nodefs.inodesFree<10%,imagefs.available<10%,imagefs.inodesFree<10%" \
-  --node-labels=component_type=node,node-role.kubernetes.io/node=""
+  --node-labels=component_type=node,node-role.kubernetes.io/node="true"
 ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
 RestartSec=10
