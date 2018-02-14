@@ -13,8 +13,8 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster.local
 DNS.5 = {{ master_fqdn }}
 IP.1 = {{ api_service_ip }}
-{% set count = 2 %}
+{% set ns = namespace(count=2) %}
 {% for host in groups['master'] %}
-IP.{{ count }} = {{ hostvars[host]['private_ip'] }}
-{% set count = count + 1 %}
+IP.{{ ns.count }} = {{ hostvars[host]['private_ip'] }}
+{% set ns.count = ns.count + 1 %}
 {% endfor %}
