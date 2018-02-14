@@ -1,7 +1,7 @@
-# Calico Version v3.0.1
-# https://docs.projectcalico.org/v3.0/releases#v3.0.1
+# Calico Version v3.0.2
+# https://docs.projectcalico.org/v3.0/releases#v3.0.2
 # This manifest includes the following component versions:
-#   calico/node:v3.0.1
+#   calico/node:v3.0.2
 #   calico/cni:v2.0.0
 
 # This ConfigMap is used to configure a self-hosted Calico installation.
@@ -107,7 +107,7 @@ spec:
       hostNetwork: true
       serviceAccountName: calico-node
       containers:
-      - image: quay.io/calico/typha:v0.6.0
+      - image: quay.io/calico/typha:v0.6.1
         name: calico-typha
         ports:
         - containerPort: 5473
@@ -197,7 +197,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: quay.io/calico/node:v3.0.1
+          image: quay.io/calico/node:v3.0.2
           env:
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
