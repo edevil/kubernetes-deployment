@@ -1,5 +1,5 @@
-# Calico Version v3.0.1
-# https://docs.projectcalico.org/v3.0/releases#v3.0.1
+# Calico Version v3.0.2
+# https://docs.projectcalico.org/v3.0/releases#v3.0.2
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
