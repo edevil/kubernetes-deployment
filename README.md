@@ -268,3 +268,4 @@ After all previous steps have been taken and the cluster is stable, alter the AP
 - [ ] setup node autoscaling
 - [ ] package management - [helm](https://helm.sh)
 - [ ] service broker api for azure services - [Open Service Broker for Azure](https://github.com/Azure/open-service-broker-azure)
+- [ ] support VMSS (https://github.com/kubernetes/kubernetes/pull/59716)
