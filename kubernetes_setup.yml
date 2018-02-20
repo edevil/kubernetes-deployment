@@ -115,8 +115,10 @@
       template: src=kube-proxy.yaml dest=/etc/kubernetes/manifests/kube-proxy.yaml
     - name: Reload systemd daemons
       shell: systemctl daemon-reload
-    - name: Restart locksmithd
-      service: name=locksmithd state=restarted enabled=yes
+    - name: Enable update-engine
+      service: name=update-engine state=started enabled=yes
+    - name: Stop locksmithd
+      service: name=locksmithd state=stopped enabled=no
     - name: Start Kubelet
       service: name=kubelet state=started enabled=yes
 

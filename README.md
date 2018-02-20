@@ -187,6 +187,17 @@ Change the email address on the config file before creating it.
     kubectl apply -f nginx_ingress/lego/deployment.yaml
 
 
+### CoreOS upgrade Operator
+
+This operator makes sure nodes are drained before a reboot to upgrade the CoreOS version:
+
+    kubectl apply -f coreos_operator/namespace.yaml
+    kubectl apply -f coreos_operator/cluster-role.yaml
+    kubectl apply -f coreos_operator/cluster-role-binding.yaml
+    kubectl apply -f coreos_operator/update-agent.yaml
+    kubectl apply -f coreos_operator/update-operator.yaml
+
+
 # Upgrade notes
 
 1. On the master components, alter the image tag on the pod manifests (/etc/kubernetes/manifests/). Be careful not to edit the files in place otherwise the editor may place swap files, etc, on the manifests dir, which will cause havoc with kubelet. It's best to edit the files somewhere else and then copy over. The apiserver needs to be upgraded before kubelets.
