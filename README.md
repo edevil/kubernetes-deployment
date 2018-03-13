@@ -176,6 +176,8 @@ Nginx rbac permissions based on [this](https://github.com/kubernetes/ingress-ngi
 ### Nginx config, deployment and service
 
     kubectl apply -f nginx_ingress/nginx/configmap.yaml
+    kubectl apply -f nginx_ingress/nginx/tcp-services-configmap.yaml
+    kubectl apply -f nginx_ingress/nginx/udp-services-configmap.yaml
     kubectl apply -f nginx_ingress/nginx/service.yaml
     kubectl apply -f nginx_ingress/nginx/deployment.yaml
 
