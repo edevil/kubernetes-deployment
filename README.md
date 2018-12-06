@@ -1,3 +1,5 @@
+# NOT CURRENTLY MAINTAINED
+
 # Kubernetes automated deployment on Azure
 
 Automated scripts to provision a Kubernetes cluster on the Azure cloud, based on [Terraform](https://www.terraform.io) and [Ansible](https://www.ansible.com).
